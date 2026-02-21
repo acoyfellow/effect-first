@@ -33,7 +33,7 @@ const textResponse = (text: string, status = 200) =>
     const tokens = estimateTokens(text)
 
     if (wantJson) {
-      return HttpServerResponse.json(
+      return yield* HttpServerResponse.json(
         {
           ok: true,
           route: new URL(request.url, "http://localhost").pathname,
