@@ -10,16 +10,31 @@ A minimal Effect-first CLI built by Codex using the effect-first.coey.dev refere
    - `Schema.TaggedError` for typed errors
    - `Context.Tag` + `Layer` for services
    - `Schema.Class` + branded types for data
-   - `Schema.Config` for configuration
+   - `Layer.mergeAll` for composing multiple services
    - `@effect/vitest` for testing
+3. **Two services** — `Greeter` (original) and `TodoRepo` (database-style CRUD):
+   - `TodoRepo` — in-memory repository with `create`, `findById`, `complete`, `list`
+   - Branded `TodoId`, `Schema.Class` for `Todo`, and two `TaggedError` types
+   - Separate `testLayer` with deterministic "test-N" IDs
 
 ## Try it
 
 ```bash
 npm install
 npm run build
+
+# Greeter
 node dist/cli.js greet --name Alice
 node dist/cli.js greet --name Alice --shout
+
+# Todo CRUD
+node dist/cli.js todo add --title "Buy milk"
+node dist/cli.js todo add --title "Read a book"
+node dist/cli.js todo list
+node dist/cli.js todo done 1
+node dist/cli.js todo list
+
+# Tests
 npm test
 ```
 
