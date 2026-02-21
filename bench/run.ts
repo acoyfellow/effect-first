@@ -11,7 +11,7 @@ const tasks = [
 
 const importJudge = (path: string) =>
   Effect.tryPromise({
-    try: () => import(path),
+    try: () => import(new URL(path, import.meta.url).href),
     catch: (error) => error as Error,
   })
 
@@ -20,7 +20,7 @@ const runTask = (task: string) =>
     const fs = yield* NodeFileSystem
     const cwd = yield* fs.cwd
     const root = `${cwd}/bench/${task}`
-    const judgeModule = `${root}/judge.js`
+    const judgeModule = `${root}/judge.ts`
     const expectedDir = `${root}/expected`
 
     const exists = yield* fs.exists(expectedDir)
