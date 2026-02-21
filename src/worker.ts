@@ -9,6 +9,10 @@ const router = HttpRouter.empty.pipe(
   )
 )
 
+const handler = HttpApp.toWebHandler(router)
+
+export { router, handler }
+
 export default {
-  fetch: HttpApp.toWebHandler(router),
+  fetch: handler,
 }
