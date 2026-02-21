@@ -1,24 +1,24 @@
-Here's a simple Effect program that prints a greeting to stdout, following the specified requirements. The program uses `Effect.fn` for the named function and `Effect.gen` for sequencing. The entry point is provided using `NodeRuntime.runMain`.
+Here's a simple Effect program that prints a greeting to stdout using the specified Effect-First TypeScript rules. The program is contained in a single file named `main.ts`.
 
 ```typescript
 import { Effect, NodeRuntime } from "effect";
 
 const greet = Effect.fn("greet")(function* () {
-  return "Hello, Effect!";
+  yield* Effect.logInfo("Hello, Effect!");
 });
 
 const program = Effect.gen(function* () {
-  const message = yield* greet;
-  yield* Effect.logInfo(message);
+  yield* greet;
 });
 
 NodeRuntime.runMain(program);
 ```
 
 ### Explanation:
-1. **Effect.fn**: The `greet` function is defined using `Effect.fn`, which returns a greeting message.
-2. **Effect.gen**: The `program` function is defined using `Effect.gen`, where we yield the result of the `greet` function and log it to stdout.
-3. **NodeRuntime.runMain**: This is used to run the `program` as the entry point of the application.
+1. **Effect.fn**: The `greet` function is wrapped with `Effect.fn` to define it as an effectful function.
+2. **Effect.gen**: The `program` function uses `Effect.gen` to sequence the effects, yielding the `greet` effect.
+3. **NodeRuntime.runMain**: The `program` is passed to `NodeRuntime.runMain` to execute it as the entry point.
+4. **Effect.logInfo**: This is used to log the greeting message to stdout.
 
 ### Output:
 When you run this program, it will output:

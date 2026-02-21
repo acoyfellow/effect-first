@@ -1,107 +1,96 @@
-Here's a complete implementation of a small Effect module that meets the requirements specified in your task prompt. The module includes services, schemas, errors, and configuration, all contained within a single file named `main.ts`.
+Here's a complete implementation of a small Effect module that meets the specified requirements. The module includes services, schemas, errors, and configuration, all contained within a single file named `main.ts`.
 
 ```typescript
 // main.ts
-import { Effect, Context, Layer, Schema, Config, Redacted, Schedule, Match } from "effect";
+import { Effect, Context, Layer, Schema, Config, Schedule } from "effect";
 
-// Define a branded type for the AppName
+// Schema for a branded type
 const AppName = Schema.String.pipe(Schema.brand("AppName"));
 type AppName = typeof AppName.Type;
 
-// Define a tagged error for invalid input
+// Tagged error for invalid input
 class InvalidInputError extends Schema.TaggedError<InvalidInputError>()(
   "InvalidInputError",
   { message: Schema.String }
 ) {}
 
-// Define a schema for the greeting request
-class GreetingRequest extends Schema.Class<GreetingRequest>("GreetingRequest")({
-  name: Schema.String,
-}) {}
-
-// Define a service for the greeting functionality
+// Context.Tag for the greeting service
 class GreetingService extends Context.Tag("@app/GreetingService")<
   GreetingService,
   {
-    readonly greet: (request: GreetingRequest) => Effect.Effect<string, InvalidInputError>;
+    readonly greet: (name: string) => Effect.Effect<unknown, InvalidInputError, string>;
   }
-> {
-  static readonly layer = Layer.effect(
-    GreetingService,
-    Effect.gen(function* () {
-      const greet = Effect.fn("greet")(function* (request: GreetingRequest) {
-        if (!request.name || request.name.trim() === "") {
-          return yield* Effect.fail(new InvalidInputError({ message: "Name cannot be empty." }));
-        }
-        return `Hello, ${request.name}! Welcome to ${yield* AppConfig.getAppName()}.`;
-      });
+> {}
 
-      return GreetingService.of({ greet });
-    })
-  );
-}
+// Layer implementation for the greeting service
+const GreetingServiceLayer = Layer.effect(GreetingService, Effect.gen(function* () {
+  const greet = Effect.fn("greet")(function* (name: string) {
+    if (!name || name.trim().length === 0) {
+      return yield* Effect.fail(new InvalidInputError({ message: "Name cannot be empty." }));
+    }
+    return `Hello, ${name}!`;
+  });
 
-// Define a service for application configuration
+  return GreetingService.of({ greet });
+}));
+
+// Configuration for the application
 class AppConfig extends Context.Tag("@app/AppConfig")<
   AppConfig,
   {
     readonly appName: AppName;
   }
 > {
-  static readonly layer = Layer.effect(
-    AppConfig,
-    Effect.gen(function* () {
-      const appName = yield* Schema.Config("APP_NAME", AppName);
-      return AppConfig.of({ appName });
-    })
-  );
-
-  static getAppName() {
-    return Effect.access((config: AppConfig) => config.appName);
-  }
+  static readonly layer = Layer.effect(AppConfig, Effect.gen(function* () {
+    const appName = yield* Schema.Config("APP_NAME", AppName);
+    return AppConfig.of({ appName });
+  }));
 }
 
-// Main program to run the greeting service
+// Main program
 const program = Effect.gen(function* () {
+  const config = yield* AppConfig;
   const greetingService = yield* GreetingService;
-  const request = new GreetingRequest({ name: "Alice" });
 
-  const greeting = yield* greetingService.greet(request).pipe(
-    Effect.catchTag("InvalidInputError", (error) => Effect.succeed(`Error: ${error.message}`))
-  );
+  const name = "Alice"; // This could be dynamic input
+  const greeting = yield* greetingService.greet(name);
 
-  yield* Effect.logInfo(greeting);
+  yield* Effect.logInfo(`${config.appName}: ${greeting}`);
 });
 
-// Entry point to provide layers and run the program
+// Entry point
 const main = Effect.gen(function* () {
   const configLayer = AppConfig.layer;
-  const greetingLayer = GreetingService.layer;
+  const greetingLayer = GreetingServiceLayer;
 
   const appLayer = greetingLayer.pipe(Layer.provideMerge(configLayer));
 
-  yield* Effect.runPromise(program.pipe(Effect.provide(appLayer)));
+  yield* program.pipe(
+    Effect.provide(appLayer),
+    Effect.catchTag("InvalidInputError", (e) => Effect.logError("Error: " + e.message))
+  );
 });
 
-// Run the main effect
-Effect.runMain(main);
+// Run the main program
+Effect.runPromise(main);
 ```
 
 ### Explanation of the Code:
 
-1. **Branded Type**: We define a branded type `AppName` for the application name using `Schema.String.pipe(Schema.brand("AppName"))`.
+1. **Branded Type**: We define a branded type `AppName` using `Schema.String.pipe(Schema.brand("AppName"))`.
 
-2. **Tagged Error**: The `InvalidInputError` class extends `Schema.TaggedError` to handle cases where the input is invalid.
+2. **Tagged Error**: The `InvalidInputError` class extends `Schema.TaggedError`, which is used to represent errors related to invalid input.
 
-3. **Schema Class**: The `GreetingRequest` class is defined using `Schema.Class` to represent the input for the greeting service.
+3. **Context.Tag Service**: The `GreetingService` class is defined as a service that provides a `greet` method.
 
-4. **Service Definition**: The `GreetingService` class is defined as a `Context.Tag` with a method `greet` that takes a `GreetingRequest` and returns a greeting message or an error.
+4. **Layer Implementation**: The `GreetingServiceLayer` is implemented using `Layer.effect`, which provides the `greet` method. It checks if the input name is valid and returns an error if not.
 
-5. **Configuration Service**: The `AppConfig` class is defined to load the application name from the environment variable `APP_NAME`.
+5. **Configuration Layer**: The `AppConfig` class defines a configuration layer that retrieves the `APP_NAME` environment variable.
 
-6. **Main Program**: The `program` function uses `Effect.gen` to sequence the effects, calling the `greet` method and handling the `InvalidInputError` using `Effect.catchTag`.
+6. **Main Program**: The `program` function uses `Effect.gen` to sequence the effects, retrieving the configuration and greeting the user.
 
-7. **Entry Point**: The `main` function composes the layers and provides them to the program, which is then executed using `Effect.runMain`.
+7. **Error Handling**: The `main` function includes error handling using `Effect.catchTag` to log any `InvalidInputError`.
 
-### Usage:
-To run this code, ensure you have the necessary environment variable `APP_NAME` set, and then execute the TypeScript file using a TypeScript runtime that supports the Effect library.
+8. **Entry Point**: The `main` function composes the layers and runs the program using `Effect.runPromise`.
+
+This module encapsulates the required functionality and adheres to the Effect-First principles outlined in your prompt.

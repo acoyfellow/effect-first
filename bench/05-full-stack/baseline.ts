@@ -1,91 +1,78 @@
-To create a small Effect module that meets the specified requirements, we can use the ZIO library in TypeScript. Below is a complete implementation in a single file named `main.ts`. This implementation includes services, schemas, errors, and configuration, while adhering to the requirements outlined.
+Below is a simple implementation of the requested Effect module in TypeScript, using the `Effect` library. This module includes services, schemas, errors, and configuration, all contained within a single file named `main.ts`.
 
 ```typescript
-import { Effect, Schema, Context, Layer, ZIO, Runtime } from 'effect-ts';
-import { pipe } from 'effect-ts/Function';
-
-// Define a configuration schema
-const ConfigSchema = Schema.struct({
-  APP_NAME: Schema.string,
-});
+// main.ts
+import * as Effect from '@effect-ts/core/Effect';
+import * as Schema from '@effect-ts/schema';
+import * as Config from '@effect-ts/core/Config';
+import * as Console from '@effect-ts/core/Effect/Console';
 
 // Define a tagged error for validation
-const GreetingError = Schema.TaggedError('GreetingError', Schema.string);
+const ValidationError = Schema.TaggedError<"ValidationError", string>();
 
-// Define a branded type for the greeting input
-type GreetingInput = string & { readonly GreetingInput: unique symbol };
+// Define a branded type for the application name
+type AppName = Schema.Branded<string, { readonly AppName: unique symbol }>;
 
-// Create a service for greeting
-class GreetingService {
-  constructor(private appName: string) {}
+const AppNameSchema = Schema.brand(Schema.string, (s): s is AppName => s.length > 0);
 
-  greet(input: GreetingInput): string {
-    return `Hello, ${input}! Welcome to ${this.appName}.`;
-  }
-}
+// Define a context tag for the application configuration
+const AppConfig = Schema.Class<{
+  appName: AppName;
+}>();
 
-// Define a layer for the GreetingService
-const GreetingServiceLayer = (config: { APP_NAME: string }): Layer<never, never, GreetingService> =>
-  Layer.fromValue(new GreetingService(config.APP_NAME));
-
-// Function to validate input
-const validateInput = (input: string): Effect.Effect<never, GreetingError, GreetingInput> => {
-  return Effect.gen(function* ($) {
-    if (input.trim() === '') {
-      return yield* $(Effect.fail(GreetingError('Input cannot be empty')));
+// Define a service for greeting
+const GreetingService = {
+  greet: (name: string) => Effect.gen(function* (_) {
+    if (name.trim().length === 0) {
+      throw ValidationError("Name cannot be empty");
     }
-    return input as GreetingInput; // Cast to branded type
-  });
+    const greeting = `Hello, ${name}! Welcome to ${process.env.APP_NAME}`;
+    yield* _(Console.log(greeting));
+    return greeting;
+  })
 };
 
-// Main program
-const main = Effect.gen(function* ($) {
-  // Load configuration
-  const config = yield* $(Effect.fromPromise(() => Promise.resolve({ APP_NAME: 'MyApp' })));
+// Define the main application logic
+const runApp = Effect.gen(function* (_) {
+  const appName = yield* _(Config.get(AppConfig));
+  const name = "John Doe"; // This could be replaced with user input
 
-  // Provide the GreetingService layer
-  const greetingService = yield* $(Effect.provide(GreetingServiceLayer(config)));
-
-  // Validate input
-  const input = 'John Doe'; // Example input
-  const validatedInput = yield* $(validateInput(input).catchTag(GreetingError, (error) => {
-    console.error(`Error: ${error}`);
-    return Effect.fail('Failed to validate input');
-  }));
-
-  // Generate greeting
-  const greeting = greetingService.greet(validatedInput);
-  console.log(greeting);
+  yield* _(GreetingService.greet(name));
 });
 
-// Entry point
-const runMain = () => {
-  const runtime = Runtime.default;
-  runtime.run(main);
-};
+// Define the layer for the application configuration
+const AppConfigLayer = Effect.succeed({
+  appName: "My Awesome App" as AppName
+});
+
+// Entry point to run the application
+const main = Effect.provideLayer(runApp)(AppConfigLayer);
+
+// Handle tagged errors
+const runMain = Effect.catchTag(main, {
+  ValidationError: (error) => Console.log(`Validation Error: ${error}`)
+});
 
 // Execute the main function
-runMain();
+Effect.runMain(runMain);
 ```
 
-### Explanation of the Code:
+### Explanation:
 
-1. **Configuration Schema**: We define a schema for our configuration using `Schema.struct`, which includes an `APP_NAME`.
+1. **Error Handling**: We define a `ValidationError` using `Schema.TaggedError` to handle validation errors specifically.
 
-2. **Tagged Error**: We create a tagged error `GreetingError` using `Schema.TaggedError`, which will be used for input validation errors.
+2. **Branded Types**: We create a branded type `AppName` to ensure that the application name is a non-empty string.
 
-3. **Branded Type**: We define a branded type `GreetingInput` to ensure that only valid strings can be used as input for the greeting.
+3. **Context Tag**: We define a context tag `AppConfig` that holds the application configuration.
 
-4. **Greeting Service**: The `GreetingService` class is created to handle greeting logic, taking the application name from the configuration.
+4. **Greeting Service**: The `GreetingService` provides a method `greet` that takes a name, validates it, and logs a greeting message.
 
-5. **Layer for Greeting Service**: We define a layer `GreetingServiceLayer` that constructs the `GreetingService` using the provided configuration.
+5. **Main Logic**: The `runApp` function retrieves the application name from the configuration and calls the greeting service.
 
-6. **Input Validation**: The `validateInput` function checks if the input is empty and returns a tagged error if it is.
+6. **Layer Definition**: The `AppConfigLayer` provides the application configuration needed by the application.
 
-7. **Main Program**: The `main` function orchestrates the loading of the configuration, providing the service layer, validating the input, and generating the greeting.
+7. **Entry Point**: The `main` function combines the application logic with the configuration layer, and `runMain` handles any tagged errors that occur during execution.
 
-8. **Error Handling**: We use `catchTag` to handle `GreetingError` and log the error message.
+8. **Execution**: Finally, we run the application using `Effect.runMain`.
 
-9. **Entry Point**: The `runMain` function initializes the runtime and runs the main effect.
-
-This implementation meets all the specified requirements and demonstrates the use of the Effect library in TypeScript effectively.
+This implementation meets the requirements specified in the task and demonstrates the use of the Effect library effectively.
