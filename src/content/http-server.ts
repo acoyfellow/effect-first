@@ -1,20 +1,15 @@
 export const HTTP_SERVER_TEXT = `# Effect-First TypeScript — HTTP Server (HttpApi)
 
-The modern Effect HTTP server uses the declarative HttpApi pattern: define endpoints as schemas, group them, implement handlers, serve.
-
 Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGroup, HttpApiMiddleware, HttpApiSecurity)
-
----
 
 ## Imports
 
     import {
       HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGroup,
-      HttpApiMiddleware, HttpApiSecurity, HttpApiError, HttpServer
+      HttpApiMiddleware, HttpApiSecurity
     } from "@effect/platform"
     import { NodeHttpServer } from "@effect/platform-node"
 
----
 
 ## Step 1 — Define endpoints
 
@@ -46,7 +41,6 @@ Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGrou
 
     class MyApi extends HttpApi.make("myApi").add(UsersGroup) {}
 
----
 
 ## Step 2 — Implement handlers
 
@@ -69,34 +63,28 @@ Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGrou
         )
     )
 
----
 
 ## Step 3 — Serve
 
     import { NodeHttpServer } from "@effect/platform-node"
-    import { HttpApiBuilder, HttpServer } from "@effect/platform"
+    import { HttpApiBuilder } from "@effect/platform"
     import { Layer, Effect } from "effect"
     import { createServer } from "node:http"
 
-    const ApiLive = HttpApiBuilder.api(MyApi)
+    const ApiLive = HttpApiBuilder.api(MyApi).pipe(
+      Layer.provide(UsersGroupLive),
+      Layer.provide(Users.layer)
+    )
 
     const ServerLive = NodeHttpServer.layer(createServer, { port: 3000 })
 
-    const appLayer = Layer.mergeAll(
-      ApiLive,
-      UsersGroupLive,
-      Users.layer
-    ).pipe(
+    const app = HttpApiBuilder.serve().pipe(
+      Layer.provide(ApiLive),
       Layer.provide(ServerLive)
     )
 
-    const server = HttpApiBuilder.serve().pipe(
-      Layer.provide(appLayer)
-    )
+    Layer.launch(app).pipe(Effect.runPromise)
 
-    Layer.launch(server).pipe(Effect.runPromise)
-
----
 
 ## HttpApi key constructors
 
@@ -133,7 +121,6 @@ Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGrou
     HttpApiBuilder.serve()                           — Layer that starts server
     HttpApiBuilder.toWebHandler(layer)               — { handler, dispose } for Cloudflare/Bun
 
----
 
 ## Security
 
@@ -158,7 +145,6 @@ Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGrou
       })
     }))
 
----
 
 ## Anti-patterns
 
