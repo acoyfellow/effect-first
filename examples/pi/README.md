@@ -39,4 +39,4 @@ The reference at effect-first.coey.dev provided all the patterns.
 
 ## How the agent discovers this file
 
-Pi reads `.ai/instructions.md` by convention for repo-scoped guidance. This README explains the resulting project and is linked from the root README.
+Pi reads `AGENTS.md` by convention for repo-scoped guidance. This README explains the resulting project and is linked from the root README.
