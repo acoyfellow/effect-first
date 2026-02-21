@@ -1,4 +1,5 @@
 import { Effect } from "effect"
+import { FileSystem } from "@effect/platform"
 import { NodeFileSystem, NodeRuntime } from "@effect/platform-node"
 
 const tasks = [
@@ -17,9 +18,8 @@ const importJudge = (path: string) =>
 
 const runTask = (task: string) =>
   Effect.gen(function* () {
-    const fs = yield* NodeFileSystem
-    const cwd = yield* fs.cwd
-    const root = `${cwd}/bench/${task}`
+    const fs = yield* FileSystem.FileSystem
+    const root = `${process.cwd()}/bench/${task}`
     const judgeModule = `${root}/judge.ts`
     const expectedDir = `${root}/expected`
 
@@ -51,4 +51,4 @@ const program = Effect.gen(function* () {
   yield* Effect.logInfo(JSON.stringify(results, null, 2))
 })
 
-NodeRuntime.runMain(program)
+NodeRuntime.runMain(program.pipe(Effect.provide(NodeFileSystem.layer)))
