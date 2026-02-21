@@ -8,8 +8,6 @@ Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGrou
       HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGroup,
       HttpApiMiddleware, HttpApiSecurity
     } from "@effect/platform"
-    import { NodeHttpServer } from "@effect/platform-node"
-
 
 ## Step 1 — Define endpoints
 
@@ -79,8 +77,8 @@ Package: @effect/platform (HttpApi, HttpApiBuilder, HttpApiEndpoint, HttpApiGrou
     const ServerLive = NodeHttpServer.layer(createServer, { port: 3000 })
 
     const app = HttpApiBuilder.serve().pipe(
-      Layer.provide(ApiLive),
-      Layer.provide(ServerLive)
+      Layer.provide(ServerLive),
+      Layer.provide(ApiLive)
     )
 
     Layer.launch(app).pipe(Effect.runPromise)
