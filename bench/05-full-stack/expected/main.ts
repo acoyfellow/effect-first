@@ -32,6 +32,13 @@ class Greeter extends Context.Tag("@app/Greeter")<
       })
     })
   )
+
+  static readonly testLayer = Layer.succeed(
+    Greeter,
+    Greeter.of({
+      greet: (name) => Effect.succeed(new Greeting({ message: `Hello, ${name}`, recipient: name })),
+    })
+  )
 }
 
 const program = Effect.gen(function* () {
