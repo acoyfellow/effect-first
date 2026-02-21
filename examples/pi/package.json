@@ -2,9 +2,11 @@
   "name": "effect-first-example-pi",
   "version": "1.0.0",
   "type": "module",
+  "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run",
+    "start": "node dist/cli.js check --url http://localhost:3000/health"
   },
   "dependencies": {
     "@effect/platform-node": "^0.104.1",
