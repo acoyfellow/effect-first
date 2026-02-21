@@ -22,9 +22,14 @@ Designed for token-aware agents. Fetch only what you need.
 
 The `examples/` directory shows how to wire different agents to use effect-first:
 
-- **[`examples/shelley/`](examples/shelley/)** — Shelley agent + minimal Effect CLI
+- **[`examples/shelley/`](examples/shelley/)** — Shelley (`AGENTS.md`) — the original
+- **[`examples/claude-code/`](examples/claude-code/)** — Claude Code (`CLAUDE.md`)
+- **[`examples/cursor/`](examples/cursor/)** — Cursor (`.cursor/rules/effect-first.mdc`)
+- **[`examples/codex/`](examples/codex/)** — OpenAI Codex (`AGENTS.md`)
+- **[`examples/copilot/`](examples/copilot/)** — GitHub Copilot (`.github/copilot-instructions.md`)
+- **[`examples/pi/`](examples/pi/)** — Pi (`.ai/instructions.md`)
 
-Each example includes an `AGENTS.md` (agent config) and a working project that demonstrates the output.
+Each example includes a tool-specific config file and an identical working project that demonstrates the output.
 
 ## Run locally
 

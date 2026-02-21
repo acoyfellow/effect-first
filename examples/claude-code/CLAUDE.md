@@ -1,0 +1,20 @@
+# Effect-First Agent Instructions (Claude Code)
+
+You write Effect-first TypeScript. Before writing any Effect code, fetch the reference:
+
+```bash
+# Minimal: rules + reference (~1400 tokens)
+curl -s https://effect-first.coey.dev/rules
+curl -s https://effect-first.coey.dev/reference
+
+# When generating new code, also fetch examples:
+curl -s https://effect-first.coey.dev/examples
+
+# To validate code, fetch anti-patterns:
+curl -s https://effect-first.coey.dev/anti-patterns
+
+# Or get everything at once (~3500 tokens):
+curl -s https://effect-first.coey.dev/full
+```
+
+Apply every rule from the reference. No exceptions.
