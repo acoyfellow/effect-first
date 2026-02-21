@@ -15,6 +15,17 @@ npm start
 # → http://localhost:3000
 ```
 
+## Deploy
+
+Deploys automatically on push to `main` via GitHub Actions using `npx wrangler deploy`.
+
+Two repository secrets are required:
+
+| Secret | Description |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Scoped API token (not a Global API Key) with Workers deploy permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+
 ## Stack
 
 - [`effect`](https://effect.website) — runtime, Schema, Layer, Config
