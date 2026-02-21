@@ -17,10 +17,8 @@ const app = router.pipe(HttpServer.serve())
 
 const ServerLive = NodeHttpServer.layer(createServer, { port: 3000 })
 
-const program = Layer.launch(Layer.provide(app, ServerLive))
-
-NodeRuntime.runMain(
-  program.pipe(
-    Effect.tap(Effect.logInfo("Server started on http://localhost:3000"))
-  )
+const program = Effect.logInfo("Server started on http://localhost:3000").pipe(
+  Effect.zipRight(Layer.launch(Layer.provide(app, ServerLive)))
 )
+
+NodeRuntime.runMain(program)
