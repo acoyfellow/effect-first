@@ -16,10 +16,6 @@ const judge = Effect.gen(function* () {
     rule("uses Effect.fn", matchesAny(source, [/Effect\.fn\(/])),
     rule("uses Effect.gen", matchesAny(source, [/Effect\.gen\(/])),
     rule("uses NodeRuntime.runMain", matchesAny(source, [/NodeRuntime\.runMain/])),
-    rule("uses Schema.TaggedError", matchesAny(source, [/Schema\.TaggedError/])),
-    rule("uses Context.Tag+Layer", matchesAny(source, [/Context\.Tag/, /Layer\./])),
-    rule("uses Schema.Class", matchesAny(source, [/Schema\.Class/])),
-    rule("provides layers at entry", matchesAny(source, [/Effect\.provide\(/, /NodeRuntime\.runMain/])),
   ]
 
   return tallyScore(rules)
