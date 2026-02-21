@@ -6,14 +6,13 @@ Run: `bun bench/run.ts`
 
 | Task | Score | Notes |
 | --- | --- | --- |
-| 01-hello | 57% | Missing TaggedError, Context/Layer, Schema.Class (not required by prompt). |
-| 02-errors | 71% | Missing Schema.Class, Context/Layer (not required by prompt). |
-| 03-service | 71% | Missing TaggedError, Schema.Class (not required by prompt). |
-| 04-schema | 71% | Missing TaggedError, Context/Layer (not required by prompt). |
-| 05-full-stack | 100% | All rules satisfied. |
+| 01-hello | 100% | Task-specific rules (Effect.fn, Effect.gen, NodeRuntime.runMain). |
+| 02-errors | 100% | Checks TaggedError + catchTag handling. |
+| 03-service | 100% | Validates Context.Tag + Layer wiring for Clock service. |
+| 04-schema | 100% | Validates Schema.Class + branded types + entry point. |
+| 05-full-stack | 100% | Full stack rules enforced. |
 
 ## Observations
 
-- Judges enforce a shared rule set across all tasks.
-- Some tasks intentionally omit features that are scored, so expected solutions are below 100%.
+- Judges are task-specific; expected solutions should score 100%.
 - Use scores as a baseline; deltas are what matter for treatments.
