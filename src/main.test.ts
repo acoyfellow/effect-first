@@ -220,3 +220,49 @@ it.effect("GET /streams returns 200 and contains Stream", () =>
     )
   )
 )
+
+
+it.effect("GET /rules includes X-Token-Count header", () =>
+  get("/rules").pipe(
+    Effect.flatMap((res) =>
+      Effect.sync(() => {
+        const header = res.headers.get("X-Token-Count")
+        expect(res.status).toBe(200)
+        expect(header).not.toBeNull()
+        expect(Number(header)).toBeGreaterThan(0)
+      })
+    )
+  )
+)
+
+it.effect("GET /bundle returns combined modules", () =>
+  get("/bundle?modules=rules,reference").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(res.headers.get("X-Token-Count")).not.toBeNull()
+            expect(body).toContain("RULE 1")
+            expect(body).toContain("Effect Primitives")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /bundle with invalid modules returns 400", () =>
+  get("/bundle?modules=").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(400)
+            expect(body).toContain("Missing or invalid ?modules=")
+          })
+        )
+      )
+    )
+  )
+)
