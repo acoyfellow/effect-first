@@ -19,6 +19,7 @@ const judge = Effect.gen(function* () {
     rule("uses Schema.Class", matchesAny(source, [/Schema\.Class/])),
     rule("uses Schema.brand", matchesAny(source, [/Schema\.brand/])),
     rule("uses Schema.encode", matchesAny(source, [/Schema\.encode/])),
+    rule("uses Schema.decodeUnknown", matchesAny(source, [/Schema\.decodeUnknown/])),
     rule("uses NodeRuntime.runMain", matchesAny(source, [/NodeRuntime\.runMain/])),
     ruleAbsent("no async functions", source, [/\basync function\b/]),
     ruleAbsent("no try/catch", source, [/\btry\b/, /\bcatch\b/]),
