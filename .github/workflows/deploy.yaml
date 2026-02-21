@@ -19,6 +19,7 @@ jobs:
 
       - run: npm ci
 
+      - run: npm test
       - run: npm run build
       - run: npx wrangler deploy
         env:
