@@ -14,7 +14,7 @@ class Greeting extends Schema.Class<Greeting>("Greeting")({
   recipient: Schema.String,
 }) {}
 
-class Greeter extends Context.Tag("Greeter")<
+class Greeter extends Context.Tag("@app/Greeter")<
   Greeter,
   { readonly greet: (name: string) => Effect.Effect<Greeting, NameTooShortError> }
 >() {
