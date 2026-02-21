@@ -36,7 +36,7 @@ Endpoints (all text/plain unless noted):
   /resources   ~400 tok   Resource lifecycle: Scope, acquireRelease, Layer.scoped, Pool.
                            Use: cleanup guarantees for connections, files, handles.
 
-  /full        ~4000 tok  Core sections combined (rules + reference + examples + anti-patterns).
+  /full        ~4700 tok  Core sections combined (rules + reference + examples + anti-patterns).
                            Use: you have token budget and want the core in one fetch.
 
   /bundle?modules=rules,reference  Combine modules in one response (comma-separated names).
