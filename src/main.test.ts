@@ -1,13 +1,17 @@
 import { it } from "@effect/vitest"
 import { Effect } from "effect"
 import { expect } from "vitest"
-import { GUIDE_TEXT } from "./content.js"
+import { INDEX_TEXT } from "./content/index.js"
 import { handler } from "./worker.js"
 
+// Helper: GET a route and return the Response
+const get = (path: string) =>
+  Effect.promise(() => handler(new Request(`http://localhost${path}`)))
+
 it.effect("GET / returns 200 with text/plain content-type", () =>
-  Effect.promise(() => handler(new Request("http://localhost/"))).pipe(
+  get("/").pipe(
     Effect.flatMap((res) =>
-      Effect.gen(function* () {
+      Effect.sync(() => {
         expect(res.status).toBe(200)
         expect(res.headers.get("content-type")).toMatch(/text\/plain/)
       })
@@ -15,14 +19,14 @@ it.effect("GET / returns 200 with text/plain content-type", () =>
   )
 )
 
-it.effect("GET / responds with the full guide text", () =>
-  Effect.promise(() => handler(new Request("http://localhost/"))).pipe(
+it.effect("GET / responds with the index text", () =>
+  get("/").pipe(
     Effect.flatMap((res) =>
       Effect.promise(() => res.text()).pipe(
         Effect.flatMap((body) =>
           Effect.sync(() => {
-            expect(body).toBe(GUIDE_TEXT)
-            expect(body).toContain("# Effect-First TypeScript")
+            expect(body).toBe(INDEX_TEXT)
+            expect(body).toContain("effect-first.coey.dev")
           })
         )
       )
@@ -31,7 +35,7 @@ it.effect("GET / responds with the full guide text", () =>
 )
 
 it.effect("GET / includes charset=utf-8 in content-type", () =>
-  Effect.promise(() => handler(new Request("http://localhost/"))).pipe(
+  get("/").pipe(
     Effect.flatMap((res) =>
       Effect.sync(() => {
         expect(res.headers.get("content-type")).toMatch(/charset=utf-8/)
@@ -41,7 +45,7 @@ it.effect("GET / includes charset=utf-8 in content-type", () =>
 )
 
 it.effect("GET / includes Cache-Control header", () =>
-  Effect.promise(() => handler(new Request("http://localhost/"))).pipe(
+  get("/").pipe(
     Effect.flatMap((res) =>
       Effect.sync(() => {
         expect(res.headers.get("cache-control")).toBe("public, max-age=3600")
@@ -50,8 +54,84 @@ it.effect("GET / includes Cache-Control header", () =>
   )
 )
 
+it.effect("GET /rules returns 200 and contains RULE 1", () =>
+  get("/rules").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("RULE 1")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /reference returns 200 and contains Effect Primitives", () =>
+  get("/reference").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("Effect Primitives")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /examples returns 200 and contains Effect.fn", () =>
+  get("/examples").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("Effect.fn")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /anti-patterns returns 200 and contains WRONG: and RIGHT:", () =>
+  get("/anti-patterns").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("WRONG:")
+            expect(body).toContain("RIGHT:")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /full returns 200 and contains # Effect-First TypeScript", () =>
+  get("/full").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("# Effect-First TypeScript")
+          })
+        )
+      )
+    )
+  )
+)
+
 it.effect("GET /health returns JSON { ok: true }", () =>
-  Effect.promise(() => handler(new Request("http://localhost/health"))).pipe(
+  get("/health").pipe(
     Effect.flatMap((res) =>
       Effect.promise(() => res.json()).pipe(
         Effect.flatMap((body) =>

@@ -1,10 +1,30 @@
 # effect-first
 
-A resource for agents who want to write proper Effect programs.
+A reference for agents who want to write proper Effect programs.
 
 Live at: https://effect-first.coey.dev
 
-Serves the Effect-First TypeScript Agent Reference as a plain-text response at the root URL — built with Effect-first patterns using `@effect/platform-node`.
+## Endpoints
+
+| Route | Tokens | Purpose |
+|---|---|---|
+| `/` | ~200 | Index — routing manifest, tells agents what to fetch |
+| `/rules` | ~800 | The 9 rules, terse, no examples |
+| `/reference` | ~600 | Imports, primitives, type signatures, quick-lookup |
+| `/examples` | ~2000 | Copy-paste ready code patterns |
+| `/anti-patterns` | ~400 | "Never X → do Y" correction table |
+| `/full` | ~3500 | Complete reference, all sections combined |
+| `/health` | — | JSON `{ "ok": true }` |
+
+Designed for token-aware agents. Fetch only what you need.
+
+## Examples
+
+The `examples/` directory shows how to wire different agents to use effect-first:
+
+- **[`examples/shelley/`](examples/shelley/)** — Shelley agent + minimal Effect CLI
+
+Each example includes an `AGENTS.md` (agent config) and a working project that demonstrates the output.
 
 ## Run locally
 
@@ -17,13 +37,13 @@ npm start
 
 ## Deploy
 
-Deploys automatically on push to `main` via GitHub Actions using `npx wrangler deploy`.
+Deploys automatically on push to `main` via GitHub Actions.
 
-Two repository secrets are required:
+Two repository secrets required:
 
 | Secret | Description |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | Scoped API token (not a Global API Key) with Workers deploy permissions |
+| `CLOUDFLARE_API_TOKEN` | Scoped API token with Workers deploy permissions |
 | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
 
 ## Stack
@@ -31,3 +51,5 @@ Two repository secrets are required:
 - [`effect`](https://effect.website) — runtime, Schema, Layer, Config
 - [`@effect/platform-node`](https://github.com/Effect-TS/effect/tree/main/packages/platform-node) — HTTP server
 - [`@effect/vitest`](https://github.com/Effect-TS/effect/tree/main/packages/vitest) — Effect-aware test runner
+- [Cloudflare Workers](https://workers.cloudflare.com) — deployment target
+- [Diátaxis](https://diataxis.fr) — documentation structure (adapted for agent consumption)
