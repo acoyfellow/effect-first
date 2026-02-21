@@ -35,3 +35,8 @@ Place it at the repo root, or in any subdirectory — Claude Code walks up to fi
 
 The file tells Claude Code to `curl` the reference endpoints before writing Effect code.
 No extension, no plugin — just a markdown file.
+
+
+## How the agent discovers this file
+
+Claude Code reads `CLAUDE.md` in the repo root. This README documents the resulting project.

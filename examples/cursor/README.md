@@ -27,3 +27,8 @@ npm test
 
 Cursor was given the .cursor/rules/effect-first.mdc in this directory and asked to build a minimal CLI.
 The reference at effect-first.coey.dev provided all the patterns.
+
+
+## How the agent discovers this file
+
+Cursor reads `.cursor/rules/effect-first.mdc`. This README documents the resulting project.

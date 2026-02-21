@@ -42,3 +42,8 @@ npm test
 
 Codex was given the AGENTS.md in this directory and asked to build a minimal CLI.
 The reference at effect-first.coey.dev provided all the patterns.
+
+
+## How the agent discovers this file
+
+Codex reads `AGENTS.md` in the repo root. This README documents the resulting project.

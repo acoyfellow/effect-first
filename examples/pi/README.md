@@ -4,7 +4,7 @@ A config-driven health monitor built by Pi using the effect-first.coey.dev refer
 
 ## What this demonstrates
 
-1. **.ai/instructions.md** — tells Pi to fetch the Effect reference before writing code
+1. **AGENTS.md** (pi-mono convention) — tells Pi to fetch the Effect reference before writing code
 2. **The CLI** — a health-check monitor showing config + resilience patterns:
    - `Effect.fn` for named functions
    - `Schema.TaggedError` for typed errors (`EndpointUnreachableError`, `HealthDegradedError`)
@@ -33,5 +33,10 @@ npm test
 
 ## How it was made
 
-Pi was given the .ai/instructions.md in this directory and asked to build a health monitor CLI.
+Pi was given AGENTS.md in this directory and asked to build a health monitor CLI.
 The reference at effect-first.coey.dev provided all the patterns.
+
+
+## How the agent discovers this file
+
+Pi reads `.ai/instructions.md` by convention for repo-scoped guidance. This README explains the resulting project and is linked from the root README.

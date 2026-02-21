@@ -27,3 +27,8 @@ npm test
 
 Copilot was given the copilot instructions in this directory and asked to build a minimal CLI.
 The reference at effect-first.coey.dev provided all the patterns.
+
+
+## How the agent discovers this file
+
+Copilot uses `.github/copilot-instructions.md` as its discovery point. This README explains how the project maps to the instructions.
