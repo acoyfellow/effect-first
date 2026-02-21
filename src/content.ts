@@ -22,6 +22,4 @@ export const GUIDE_TEXT = [
   STREAMS_TEXT,
   CONCURRENCY_TEXT,
   RESOURCES_TEXT,
-].join("
-
-")
+].join("\n\n")
