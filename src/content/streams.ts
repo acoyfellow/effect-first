@@ -1,6 +1,6 @@
 export const STREAMS_TEXT = `# Effect-First TypeScript — Streams
 
-Stream<A, E, R> is a pull-based, backpressured sequence of values. Think of it as Effect that emits zero or more A values.
+Stream<A, E, R> is a pull-based, backpressured sequence of values.
 
 Package: effect (Stream, Sink, Channel)
 

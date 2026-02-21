@@ -49,7 +49,6 @@ Package: @effect/platform (HttpClient, HttpClientRequest, HttpClientResponse, Ht
       Effect.withSpan("fetchUser")
     )
 
----
 
 ## Key types
 

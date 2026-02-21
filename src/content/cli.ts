@@ -4,7 +4,6 @@ Effect provides two distinct capabilities:
 1. Command execution — run external processes via @effect/platform Command
 2. CLI argument parsing — use effect Config + Schema.Config for argv/env, or @effect/cli for full CLI apps
 
----
 
 ## Imports
 
@@ -12,7 +11,6 @@ Effect provides two distinct capabilities:
     import { NodeCommandExecutor, NodeFileSystem } from "@effect/platform-node"
     import { Effect, Stream } from "effect"
 
----
 
 ## Running external commands
 
@@ -40,7 +38,6 @@ Effect provides two distinct capabilities:
       Effect.provide(NodeFileSystem.layer)
     )
 
----
 
 ## Streaming output
 
@@ -59,7 +56,6 @@ Effect provides two distinct capabilities:
     // Raw byte stream
     const bytes = Command.make("cat", "file.bin").pipe(Command.stream)
 
----
 
 ## Piping commands
 
@@ -69,7 +65,6 @@ Effect provides two distinct capabilities:
       Command.string
     )
 
----
 
 ## Process with stdin
 
@@ -78,7 +73,6 @@ Effect provides two distinct capabilities:
       Command.string
     )
 
----
 
 ## Command API reference
 
@@ -100,7 +94,6 @@ Effect provides two distinct capabilities:
     NodeCommandExecutor.layer            — Node.js process execution
     NodeFileSystem.layer                 — required by NodeCommandExecutor
 
----
 
 ## CLI argument parsing with Config
 
@@ -117,7 +110,6 @@ For simple CLIs, use effect’s Config module (reads from env + argv):
       yield* Effect.logInfo(\`Starting on port \${port}\`)
     })
 
----
 
 ## Anti-patterns
 

@@ -5,7 +5,6 @@ export const SQL_TEXT = `# Effect-First TypeScript — SQL (@effect/sql)
 Package: @effect/sql (SqlClient, SqlSchema, SqlResolver, Model, Migrator)
 DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effect/sql-mssql
 
----
 
 ## Imports
 
@@ -13,7 +12,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
     import { PgClient } from "@effect/sql-pg"        // or SqliteClient, etc.
     import { Effect, Schema } from "effect"
 
----
 
 ## SqlClient — tagged template queries
 
@@ -38,7 +36,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
       )
     })
 
----
 
 ## SqlSchema — validated queries
 
@@ -60,7 +57,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
     // SqlSchema.single     — returns A (throws NoSuchElementException if missing)
     // SqlSchema.void       — discards result
 
----
 
 ## Model — domain objects with variants
 
@@ -93,7 +89,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
     // Model.FieldOption(schema)            — Option<A> field
     // Model.JsonFromString(schema)         — JSON stored as string column
 
----
 
 ## SqlResolver — batched queries with Effect Request
 
@@ -116,7 +111,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
     // SqlResolver.grouped    — group results by key (1:many)
     // SqlResolver.void       — batched writes, no result
 
----
 
 ## Model.makeRepository — CRUD from Model
 
@@ -128,7 +122,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
 
     // Provides: findById, insert, update, delete, etc.
 
----
 
 ## Layers (provide at entry point)
 
@@ -143,7 +136,6 @@ DB adapters: @effect/sql-pg, @effect/sql-sqlite-node, @effect/sql-mysql2, @effec
     // Always assign to a const — memoization by reference
     Effect.runPromise(program.pipe(Effect.provide(DbLive)))
 
----
 
 ## Anti-patterns
 
