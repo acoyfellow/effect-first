@@ -18,7 +18,7 @@ const program = Effect.gen(function* () {
   const raw = JSON.stringify({ id: "user-123", name: "Ada" })
   const user = yield* decodeUser(raw)
   yield* Effect.logInfo(`User ${user.name}`)
-  const encoded = Schema.encode(User)(user)
+  const encoded = yield* Schema.encode(User)(user)
   yield* Effect.logInfo(JSON.stringify(encoded))
 })
 
