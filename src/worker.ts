@@ -1,4 +1,4 @@
-import { HttpApp, HttpRouter, HttpServerResponse } from "@effect/platform"
+import { HttpApp, HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
 import { Effect } from "effect"
 import { INDEX_TEXT } from "./content/index.js"
 import { RULES_TEXT } from "./content/rules.js"
@@ -12,13 +12,35 @@ import { CLI_TEXT } from "./content/cli.js"
 import { STREAMS_TEXT } from "./content/streams.js"
 import { GUIDE_TEXT } from "./content.js"
 
-const textResponse = (text: string) =>
+const estimateTokens = (text: string) => {
+  const bytes = new TextEncoder().encode(text).length
+  return Math.max(1, Math.ceil(bytes / 4))
+}
+
+const textResponse = (text: string, status = 200) =>
   Effect.succeed(
     HttpServerResponse.text(text, {
+      status,
       contentType: "text/plain; charset=utf-8",
-      headers: { "Cache-Control": "public, max-age=3600" },
+      headers: {
+        "Cache-Control": "public, max-age=3600",
+        "X-Token-Count": String(estimateTokens(text)),
+      },
     })
   )
+
+const MODULES: Record<string, string> = {
+  rules: RULES_TEXT,
+  reference: REFERENCE_TEXT,
+  examples: EXAMPLES_TEXT,
+  "anti-patterns": ANTI_PATTERNS_TEXT,
+  "http-server": HTTP_SERVER_TEXT,
+  "http-client": HTTP_CLIENT_TEXT,
+  sql: SQL_TEXT,
+  cli: CLI_TEXT,
+  streams: STREAMS_TEXT,
+  full: GUIDE_TEXT,
+}
 
 const router = HttpRouter.empty.pipe(
   HttpRouter.get("/", textResponse(INDEX_TEXT)),
@@ -32,6 +54,26 @@ const router = HttpRouter.empty.pipe(
   HttpRouter.get("/cli", textResponse(CLI_TEXT)),
   HttpRouter.get("/streams", textResponse(STREAMS_TEXT)),
   HttpRouter.get("/full", textResponse(GUIDE_TEXT)),
+  HttpRouter.get(
+    "/bundle",
+    Effect.gen(function* () {
+      const request = yield* HttpServerRequest.HttpServerRequest
+      const url = new URL(request.url, "http://localhost")
+      const modules = (url.searchParams.get("modules") ?? "")
+        .split(",")
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0)
+      const parts = modules.flatMap((module) => (module in MODULES ? [MODULES[module]] : []))
+      if (parts.length === 0) {
+        return yield* textResponse(
+          "Missing or invalid ?modules=. Valid modules: " + Object.keys(MODULES).join(", "),
+          400
+        )
+      }
+      const body = parts.join("\n\n---\n\n")
+      return yield* textResponse(body)
+    })
+  ),
   HttpRouter.get("/health", HttpServerResponse.json({ ok: true }))
 )
 
