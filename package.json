@@ -11,7 +11,8 @@
     "prepare": "tsc --version"
   },
   "dependencies": {
-    "@effect/platform-node": "^0.104.1"
+    "@effect/platform-node": "^0.104.1",
+    "dotenv": "^16.6.1"
   },
   "peerDependencies": {
     "@effect/platform": "^0.94.5",
