@@ -30,13 +30,14 @@ Endpoints (all text/plain unless noted):
   /streams     ~1400 tok  Stream, Sink, Channel: creation, transforms, consumption.
                            Use: processing sequences of values with backpressure.
 
-  /concurrency ~400 tok   Structured concurrency: Effect.all, forEach, fibers, race.
+  /concurrency ~450 tok   Structured concurrency: Effect.all, forEach, fibers, race.
                            Use: parallel work, fork/join patterns, cancellations.
 
-  /resources   ~400 tok   Resource lifecycle: Scope, acquireRelease, Layer.scoped, Pool.
+  /resources   ~450 tok   Resource lifecycle: Scope, acquireRelease, Layer.scoped, Pool.
                            Use: cleanup guarantees for connections, files, handles.
 
-  /full        ~4700 tok  Core sections combined (rules + reference + examples + anti-patterns).
+  /full        ~7000 tok  Core sections combined (rules + reference + examples + anti-patterns
+                           + http + sql + cli + streams + concurrency + resources).
                            Use: you have token budget and want the core in one fetch.
 
   /bundle?modules=rules,reference  Combine modules in one response (comma-separated names).
