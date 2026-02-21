@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "start": "node dist/cli.js greet --name World"
+    "server": "node dist/server.js"
   },
   "dependencies": {
     "@effect/platform-node": "^0.104.1"

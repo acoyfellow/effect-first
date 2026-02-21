@@ -42,7 +42,7 @@ Each example includes a tool-specific config file and a unique working project t
 |---|---|
 | Shelley | Base greeter CLI — Effect.fn, Schema.TaggedError, Context.Tag, Layer, Schema.Class |
 | Claude Code | Base greeter CLI — CLAUDE.md wiring |
-| Cursor | Base greeter CLI — .cursor/rules MDC wiring |
+| Cursor | Schema validation CLI — Schema.Class, branded types, SchemaRegistry + Validator services, .cursor/rules MDC wiring |
 | Codex | Greeter + TodoRepo — multi-service composition with Layer.mergeAll |
 | Copilot | Greeter + Stream log processor — Stream, Sink, aggregation pipelines |
 | Pi | Health monitor — Schema.Config, Schedule.exponential, Effect.retry, Effect.timeout |
