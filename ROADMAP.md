@@ -14,113 +14,144 @@ A reference endpoint that makes agents write correct Effect-TS on the first try.
 
 ---
 
-## Phase 1: Prove it works ← NOW
+## Current state
 
-**Status: partially done. Content is live. No proof it changes behavior.**
+| Phase | Status | Key evidence |
+|---|---|---|
+| 1 — Prove it works | ✅ Done | A/B benchmark: +24% on full-stack task (gpt-4o-mini) |
+| 2 — Real surface area | ✅ Done | 11 content routes + `/bundle` compositor + `/full` |
+| 3 — More agents | ✅ Done | 6 agent examples (Shelley, Claude Code, Cursor, Codex, Copilot, Pi) |
+| 4 — Dynamic serving | 🔶 Partial | Token estimation + content negotiation done; version-aware content stubbed |
+| 5 — The pattern itself | 🔶 Started | `PATTERN.md` (254 lines) exists; not yet published standalone |
 
-The Shelley example is a showcase, not a test. We need actual evidence.
+### Key numbers
+
+| Metric | Value |
+|---|---|
+| Benchmark delta (full-stack, gpt-4o-mini) | +24% (12/21 → 17/21) |
+| Benchmark delta (service) | +44% (9/16 → 16/16) |
+| Benchmark delta (schema) | +42% (7/12 → 12/12) |
+| Content modules | 11 routes + bundle + full |
+| Agent platform examples | 6 |
+| Token estimation | Byte-based (~3.3 bytes/token), served via `X-Token-Count` header |
+
+---
+
+## Phase 1: Prove it works ✅
+
+**Status: done.** Five benchmark tasks with AST-aware judges. A/B results published in `bench/AB-RESULTS.md`. The endpoint measurably improves agent output on non-trivial tasks.
 
 ### 1.1 Benchmark suite (`bench/`)
 
-Create 5 tasks of increasing complexity:
+Five tasks of increasing complexity, all built:
 
-| Task | Tests |
-|---|---|
-| `01-hello` | Effect.fn, Effect.gen, basic program, NodeRuntime.runMain |
-| `02-errors` | Schema.TaggedError, catchTag, error recovery |
-| `03-service` | Context.Tag, Layer.effect, provide at entry point |
-| `04-schema` | Schema.Class, branded types, JSON encode/decode |
-| `05-full-stack` | All of the above: service with errors, schema, config, tests |
+| Task | Rules | Baseline | Treatment | Delta |
+|---|---|---|---|---|
+| `01-hello` | 8 | 100% | 100% | +0% |
+| `02-errors` | 10 | 90% | 100% | +10% |
+| `03-service` | 16 | 56% | 100% | +44% |
+| `04-schema` | 12 | 58% | 100% | +42% |
+| `05-full-stack` | 21 | 57% | 81% | +24% |
 
 Each task has:
 - `prompt.md` — what to ask the agent
-- `judge.ts` — an Effect program that reads the output and checks conformance (does it use Effect.fn? are errors TaggedError? etc.)
-- `expected/` — reference solution for comparison
+- `judge.ts` — AST-aware conformance checker (regex + structural)
+- `baseline.ts` / `treatment.ts` — generated output for scoring
 
-The judge is the product. If the judge can reliably score Effect code quality, we have a feedback loop.
+Runner: `bun bench/run.ts`. A/B runner: `bun bench/ab.ts`.
 
-### 1.2 Run the benchmark
+### 1.2 Run the benchmark ✅
 
-- Run each task with Shelley **without** effect-first → baseline score
-- Run each task with Shelley **with** effect-first (AGENTS.md wiring) → treatment score
-- Publish the delta. If it's not significant, the content needs work, not more features.
+A/B results published in `bench/AB-RESULTS.md` (gpt-4o-mini). Trivial tasks show no delta; complex tasks show +13–38%. The endpoint matters most when the task requires multiple interacting patterns.
 
-### 1.3 Fix content gaps the benchmark reveals
+### 1.3 Fix content gaps the benchmark reveals ✅
 
-Every benchmark failure becomes a content fix. This is the feedback loop.
+Benchmark-driven iterations added: test file checks for `03-service`, `Schema.decodeUnknown` for `04-schema`, `Schema.brand` + `catchTag` + globally qualified tag ID + `testLayer` for `05-full-stack`. Tracked in `bench/RESULTS.md` "Observations".
 
 ---
 
-## Phase 2: Cover real surface area
+## Phase 2: Cover real surface area ✅
 
-**Core Effect is necessary but not sufficient.** Real projects use the platform packages.
+**Status: done.** 11 content modules served, plus bundle compositor.
 
-### 2.1 New content modules → new routes
+### 2.1 Content modules → routes ✅
+
+Originally planned (all done):
 
 | Route | Content |
 |---|---|
-| `/http-server` | @effect/platform HttpRouter, HttpServerResponse, middleware |
-| `/http-client` | @effect/platform HttpClient, request building, response handling |
-| `/sql` | @effect/sql patterns — Migrator, query builders, transactions |
-| `/cli` | @effect/cli — Command, Options, Args, completions |
-| `/streams` | Stream, Sink, Channel basics |
+| `/http-server` | HttpApi declarative server: endpoints, groups, handlers, security |
+| `/http-client` | HttpClient service: GET/POST, schema decoding, HttpApiClient |
+| `/sql` | @effect/sql: tagged template queries, SqlSchema, Model, SqlResolver |
+| `/cli` | Command execution + CLI argument parsing |
+| `/streams` | Stream, Sink, Channel: creation, transforms, consumption |
 
-Each follows the same Diátaxis split: terse rules + reference + examples. No prose.
+Added beyond plan:
 
-### 2.2 The index becomes a router
+| Route | Content |
+|---|---|
+| `/concurrency` | Fiber, Deferred, Queue, Pool, semaphore patterns |
+| `/resources` | Scope, acquireRelease, ensuring, addFinalizer |
+| `/anti-patterns` | "Never X → do Y" correction table |
+| `/reference` | Imports, primitives, type signatures, quick-lookup tables |
+| `/examples` | Copy-paste ready code patterns |
+| `/full` | All modules concatenated |
 
-Update `/` to list all available modules with token costs. Agents fetch the index, then pull what's relevant to their task. The index is the API.
+All follow the same Diátaxis split: terse rules + reference + examples. No prose.
 
-### 2.3 Composable reference
+### 2.2 The index is a router ✅
 
-New route: `/bundle?modules=rules,http-server,sql` — returns a combined response. Agents that know their task can request exactly the right context in one fetch.
+`/` lists every module with estimated token cost and use-case guidance. Agents fetch the index, then pull what's relevant.
+
+### 2.3 Composable reference ✅
+
+`/bundle?modules=rules,http-server,sql` returns combined content. Invalid module names are silently skipped; empty request returns the valid module list.
 
 ---
 
-## Phase 3: More agents
+## Phase 3: More agents ✅
 
-Each agent platform has its own config mechanism. Examples for each:
+**Status: done.** All six platforms have working example projects in `examples/`.
 
 | Agent | Config file | Status |
 |---|---|---|
-| Shelley | `AGENTS.md` | ✅ Done |
-| Claude Code | `CLAUDE.md` | Next |
-| Cursor | `.cursor/rules/*.mdc` | Planned |
-| Codex | `AGENTS.md` | Planned (same as Shelley?) |
-| Copilot | `.github/copilot-instructions.md` | Planned |
-| Pi | `AGENTS.md` | Planned (github.com/badlogic/pi-mono) |
-| Custom | Fetch in system prompt | Planned |
+| Shelley | `examples/shelley/AGENTS.md` | ✅ Done |
+| Claude Code | `examples/claude-code/CLAUDE.md` | ✅ Done |
+| Cursor | `examples/cursor/.cursor/rules/effect-first.mdc` | ✅ Done |
+| Codex | `examples/codex/AGENTS.md` | ✅ Done |
+| Copilot | `examples/copilot/.github/copilot-instructions.md` | ✅ Done |
+| Pi | `examples/pi/AGENTS.md` | ✅ Done |
 
-Each example is a working project (not just config), so people can see the output.
-
----
-
-## Phase 4: Dynamic serving
-
-### 4.1 Real token counts
-
-Count tokens server-side (tiktoken or estimate), serve in index and as `X-Token-Count` header. Agents can make informed budget decisions.
-
-### 4.2 Version-aware content
-
-`/rules?version=3.19` vs `/rules?version=4.0` — when Effect ships breaking changes, the reference stays correct for both.
-
-### 4.3 Accept header content negotiation
-
-`Accept: application/json` returns structured JSON (for agents that prefer it). `text/plain` remains default.
+Each example is a working project (package.json, tsconfig.json, README, agent config).
 
 ---
 
-## Phase 5: The pattern itself
+## Phase 4: Dynamic serving ← NOW
 
-If effect-first proves the concept, document how to build a skill endpoint for any framework:
+### 4.1 Token counts ✅
+
+Byte-based estimation (~3.3 bytes/token) served on every response via `X-Token-Count` header. JSON responses include `tokens` field. Index lists per-route estimates. Not tiktoken-precise, but functional.
+
+### 4.2 Version-aware content 🔶
+
+`?version=` parameter is parsed on all routes. `latest` and `3` are accepted; anything else returns 400. **No multi-version content exists yet** — when Effect 4.0 ships, this needs real branching.
+
+### 4.3 Accept header content negotiation ✅
+
+`Accept: application/json` → structured JSON (`{ ok, route, tokens, content }`). `Accept: text/html` → styled monospace HTML. `text/plain` is default. All three work on every route.
+
+---
+
+## Phase 5: The pattern itself 🔶
+
+`PATTERN.md` (254 lines) documents the reusable pattern:
 
 - Token-aware content splitting
 - Route-per-concern architecture
 - Benchmark-driven content quality
 - Agent config examples
 
-Publish as a guide. Others build skill endpoints for React, Rust, Kubernetes, whatever. effect-first becomes the reference implementation of the pattern.
+**Remaining:** publish as a standalone guide (blog post, docs site, or separate repo). Others build skill endpoints for React, Rust, Kubernetes, whatever. effect-first becomes the reference implementation of the pattern.
 
 ---
 
@@ -138,6 +169,9 @@ Publish as a guide. Others build skill endpoints for React, Rust, Kubernetes, wh
 - Agent coverage (how many platforms have working examples)
 - Content coverage (% of Effect API surface represented)
 
-## Next action
+## Next actions
 
-Build `bench/01-hello/` — the simplest possible benchmark task. If we can't prove a greeting program improves, nothing else matters.
+1. **Version-aware content (4.2)** — prepare content branches for Effect 4.0 when it ships.
+2. **Publish the pattern (5)** — turn `PATTERN.md` into a standalone guide others can follow.
+3. **More models in A/B** — benchmark against Claude, Gemini, and newer GPT models to validate across providers.
+4. **Tiktoken-accurate counts (4.1)** — replace byte estimation with real tokenizer for budget-sensitive agents.
