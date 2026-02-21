@@ -1,23 +1,29 @@
 import { Context, Effect, Layer } from "effect"
 import { NodeRuntime } from "@effect/platform-node"
 
-class Greeter extends Context.Tag("Greeter")<
-  Greeter,
-  { readonly greet: (name: string) => Effect.Effect<void> }
+export class Clock extends Context.Tag("@app/Clock")<
+  Clock,
+  { readonly now: Effect.Effect<number> }
 >() {
   static readonly layer = Layer.succeed(
-    Greeter,
-    Greeter.of({
-      greet: Effect.fn("Greeter.greet")(function* (name: string) {
-        yield* Effect.logInfo(`Hello, ${name}!`)
-      }),
+    Clock,
+    Clock.of({
+      now: Effect.sync(() => Date.now()),
+    })
+  )
+
+  static readonly testLayer = Layer.succeed(
+    Clock,
+    Clock.of({
+      now: Effect.succeed(1700000000000),
     })
   )
 }
 
 const program = Effect.gen(function* () {
-  const greeter = yield* Greeter
-  yield* greeter.greet("Effect")
+  const clock = yield* Clock
+  const now = yield* clock.now
+  yield* Effect.logInfo(`now=${now}`)
 })
 
-NodeRuntime.runMain(program.pipe(Effect.provide(Greeter.layer)))
+NodeRuntime.runMain(program.pipe(Effect.provide(Clock.layer)))
