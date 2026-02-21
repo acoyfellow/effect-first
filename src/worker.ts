@@ -1,5 +1,5 @@
-import { Headers, HttpApp, HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
-import { Effect, Option } from "effect"
+import { HttpApp, HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
+import { Effect } from "effect"
 import { INDEX_TEXT } from "./content/index.js"
 import { RULES_TEXT } from "./content/rules.js"
 import { REFERENCE_TEXT } from "./content/reference.js"
@@ -27,7 +27,7 @@ const wrapHtml = (text: string) =>
 const textResponse = (text: string, status = 200) =>
   Effect.gen(function* () {
     const request = yield* HttpServerRequest.HttpServerRequest
-    const accept = Option.getOrElse(Headers.get(request.headers, "accept"), () => "")
+    const accept = request.headers["accept"] ?? ""
     const wantJson = accept.includes("application/json") && !accept.includes("text/html")
     const wantHtml = accept.includes("text/html")
     const tokens = estimateTokens(text)
