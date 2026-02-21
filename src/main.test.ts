@@ -144,3 +144,79 @@ it.effect("GET /health returns JSON { ok: true }", () =>
     )
   )
 )
+
+
+it.effect("GET /http-server returns 200 and contains HttpApi", () =>
+  get("/http-server").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("HttpApi")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /http-client returns 200 and contains HttpClient", () =>
+  get("/http-client").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("HttpClient")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /sql returns 200 and contains SqlClient", () =>
+  get("/sql").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("SqlClient")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /cli returns 200 and contains Command", () =>
+  get("/cli").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("Command")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /streams returns 200 and contains Stream", () =>
+  get("/streams").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("Stream")
+          })
+        )
+      )
+    )
+  )
+)

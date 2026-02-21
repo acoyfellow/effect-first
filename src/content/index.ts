@@ -14,10 +14,26 @@ Endpoints (all text/plain unless noted):
   /anti-patterns ~400 tok "Never X -> do Y" correction table.
                            Use: you want to validate code or fix a known mistake.
 
-  /full        ~3500 tok  All sections combined (rules + reference + examples + anti-patterns).
-                           Use: you have token budget and want everything in one fetch.
+  /http-server ~1200 tok  HttpApi declarative server: endpoints, groups, handlers, security.
+                           Use: building an HTTP API with schema-validated routes.
+
+  /http-client ~800 tok   HttpClient service: GET/POST, schema decoding, HttpApiClient.
+                           Use: making HTTP requests with typed errors and retry.
+
+  /sql         ~1200 tok  @effect/sql: tagged template queries, SqlSchema, Model, SqlResolver.
+                           Use: database access with validated queries and batching.
+
+  /cli         ~900 tok   Command execution + CLI argument parsing.
+                           Use: running external processes or parsing env/argv config.
+
+  /streams     ~1100 tok  Stream, Sink, Channel: creation, transforms, consumption.
+                           Use: processing sequences of values with backpressure.
+
+  /full        ~3500 tok  Core sections combined (rules + reference + examples + anti-patterns).
+                           Use: you have token budget and want the core in one fetch.
 
   /health      JSON       { "ok": true } — uptime check.
 
 Tip: fetch /rules + /reference (~1400 tok) for most tasks. Add /examples only when generating new code.
+For domain-specific work, add the relevant module endpoint (/http-server, /sql, etc.).
 `
