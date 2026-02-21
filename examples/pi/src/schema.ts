@@ -1,13 +1,39 @@
 import { Schema } from "effect"
 
-export const Name = Schema.String.pipe(
-  Schema.minLength(2),
-  Schema.brand("Name")
-)
-export type Name = typeof Name.Type
+// ── Branded primitives ──────────────────────────────────────
 
-export class Greeting extends Schema.Class<Greeting>("Greeting")({
-  message: Schema.String,
-  recipient: Name,
-  shout: Schema.Boolean,
+export const EndpointUrl = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.brand("EndpointUrl")
+)
+export type EndpointUrl = typeof EndpointUrl.Type
+
+export const Milliseconds = Schema.Number.pipe(
+  Schema.nonNegative(),
+  Schema.brand("Milliseconds")
+)
+export type Milliseconds = typeof Milliseconds.Type
+
+export const Percentage = Schema.Number.pipe(
+  Schema.greaterThanOrEqualTo(0),
+  Schema.lessThanOrEqualTo(100),
+  Schema.brand("Percentage")
+)
+export type Percentage = typeof Percentage.Type
+
+// ── Data classes ────────────────────────────────────────────
+
+export class HealthResult extends Schema.Class<HealthResult>("HealthResult")({
+  url: EndpointUrl,
+  healthy: Schema.Boolean,
+  latencyMs: Milliseconds,
+  checkedAt: Schema.String,
+}) {}
+
+export class HealthReport extends Schema.Class<HealthReport>("HealthReport")({
+  url: EndpointUrl,
+  totalChecks: Schema.Number,
+  successCount: Schema.Number,
+  avgLatencyMs: Milliseconds,
+  successRate: Percentage,
 }) {}
