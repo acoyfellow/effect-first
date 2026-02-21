@@ -1,0 +1,26 @@
+{
+  "name": "effect-first",
+  "version": "1.0.0",
+  "description": "A resource for agents who want to write proper Effect programs",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsc && node dist/main.js",
+    "test": "vitest run",
+    "prepare": "tsc --version"
+  },
+  "dependencies": {
+    "@effect/platform-node": "^0.104.1"
+  },
+  "peerDependencies": {
+    "@effect/platform": "^0.94.5",
+    "effect": "^3.19.19"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^0.27.0",
+    "@types/node": "^25.3.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.0"
+  }
+}
