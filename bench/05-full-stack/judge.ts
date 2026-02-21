@@ -5,14 +5,21 @@ import { rule, tallyScore, matchesAny } from "../lib/score.js"
 import { ruleAbsent } from "../lib/rules.js"
 
 const mainFile = "main.ts"
+const testFile = "main.test.ts"
 
 const readMain = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem
   return yield* fs.readFileString(mainFile)
 })
 
+const readTest = Effect.gen(function* () {
+  const fs = yield* FileSystem.FileSystem
+  return yield* fs.readFileString(testFile)
+})
+
 const judge = Effect.gen(function* () {
   const source = yield* readMain
+  const testSource = yield* readTest
   const rules = [
     rule("uses Effect.fn", matchesAny(source, [/Effect\.fn\(/])),
     rule("uses Effect.gen", matchesAny(source, [/Effect\.gen\(/])),
@@ -27,7 +34,7 @@ const judge = Effect.gen(function* () {
     rule("uses NodeRuntime.runMain", matchesAny(source, [/NodeRuntime\.runMain/])),
     rule("uses Config", matchesAny(source, [/Config\./])),
     rule("uses resilience", matchesAny(source, [/Effect\.(timeout|retry|withSpan)\(/])),
-    rule("testing uses it.effect", matchesAny(source, [/it\.effect/])),
+    rule("testing uses it.effect", matchesAny(testSource, [/it\.effect/])),
     rule("service-driven workflow", matchesAny(source, [/Context\.Tag\(/])),
     ruleAbsent("no async functions", source, [/\basync function\b/]),
     ruleAbsent("no try/catch", source, [/\btry\b/, /\bcatch\b/]),
