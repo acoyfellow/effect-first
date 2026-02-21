@@ -42,7 +42,9 @@ const program = Effect.gen(function* () {
         yield* Effect.logError(`Name too short: ${error.name}`)
         return new Greeting({ message: "Fallback", recipient: error.name })
       })
-    )
+    ),
+    Effect.timeout("5 seconds"),
+    Effect.withSpan("Greeter.greet")
   )
 
   yield* Effect.logInfo(greeting.message)
