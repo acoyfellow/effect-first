@@ -221,6 +221,35 @@ it.effect("GET /streams returns 200 and contains Stream", () =>
   )
 )
 
+it.effect("GET /concurrency returns 200 and contains Effect.all", () =>
+  get("/concurrency").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("Effect.all")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /resources returns 200 and contains acquireRelease", () =>
+  get("/resources").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toContain("acquireRelease")
+          })
+        )
+      )
+    )
+  )
+)
 
 it.effect("GET /rules includes X-Token-Count header", () =>
   get("/rules").pipe(
