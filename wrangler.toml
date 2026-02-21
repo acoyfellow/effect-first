@@ -1,0 +1,7 @@
+name = "effect-first"
+main = "src/worker.ts"
+compatibility_date = "2025-01-01"
+
+[[routes]]
+pattern = "effect-first.coey.dev/*"
+custom_domain = true
