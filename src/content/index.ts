@@ -3,6 +3,7 @@ export const INDEX_TEXT = `effect-first.coey.dev — plain-text Effect-TS refere
 Endpoints (all text/plain unless noted):
 
   /rules       ~800 tok   The 9 rules of Effect-first TypeScript. Terse, no examples.
+                           Token counts are now served in X-Token-Count headers.
                            Use: you need the rules but already know the API surface.
 
   /reference   ~600 tok   Imports, primitives, type signatures, quick-lookup tables.
