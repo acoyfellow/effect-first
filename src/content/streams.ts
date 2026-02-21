@@ -1,16 +1,12 @@
 export const STREAMS_TEXT = `# Effect-First TypeScript — Streams
 
-Stream<A, E, R> is a pull-based, backpressured sequence of values. Think of it as Effect that emits zero or more A values. Streams compose with .pipe() like Effects.
+Stream<A, E, R> is a pull-based, backpressured sequence of values. Think of it as Effect that emits zero or more A values.
 
 Package: effect (Stream, Sink, Channel)
-
----
 
 ## Imports
 
     import { Stream, Sink, Chunk, Effect, Schedule } from "effect"
-
----
 
 ## Creating streams
 
@@ -41,7 +37,6 @@ Package: effect (Stream, Sink, Channel)
     Stream.iterate(0, (n) => n + 1)
     Stream.repeatValue("tick")
 
----
 
 ## Transforming streams
 
@@ -63,7 +58,6 @@ Package: effect (Stream, Sink, Channel)
       Stream.debounce("500 millis"), // debounce emissions
     )
 
----
 
 ## Consuming streams
 
@@ -86,13 +80,12 @@ Package: effect (Stream, Sink, Channel)
     yield* Stream.run(stream, Sink.collectAll())
     yield* Stream.run(stream, Sink.foldLeft(0, (acc, x) => acc + x))
 
----
 
 ## Combining streams
 
     // Merge (interleave, concurrent)
     Stream.merge(streamA, streamB)
-    Stream.mergeAll(streamA, streamB, streamC)({ concurrency: 3 })
+    Stream.mergeAll([streamA, streamB, streamC], { concurrency: 3 })
 
     // Concat (sequential)
     Stream.concat(streamA, streamB)
@@ -101,7 +94,6 @@ Package: effect (Stream, Sink, Channel)
     Stream.zip(streamA, streamB)          // Stream<[A, B]>
     Stream.zipWith(streamA, streamB, (a, b) => a + b)
 
----
 
 ## Error handling
 
@@ -111,7 +103,6 @@ Package: effect (Stream, Sink, Channel)
       Stream.retry(Schedule.exponential("1 second")),
     )
 
----
 
 ## Sinks (stream consumers)
 
@@ -125,7 +116,6 @@ Package: effect (Stream, Sink, Channel)
     Sink.sum                             — sum numbers
     Sink.take(n)                         — take first n into Chunk<A>
 
----
 
 ## Common patterns
 
@@ -146,10 +136,6 @@ Package: effect (Stream, Sink, Channel)
       Stream.runDrain
     )
 
-    // Stream to Effect (single value from stream)
-    // Every Effect<A, E, R> is also a Stream<A, E, R> (single-element stream)
-
----
 
 ## Anti-patterns
 
