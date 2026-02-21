@@ -1,0 +1,9 @@
+name = "effect-first"
+main = "dist/worker.js"
+compatibility_date = "2025-01-01"
+
+[build]
+command = "npm run build"
+[[routes]]
+pattern = "effect-first.coey.dev*"
+custom_domain = true
