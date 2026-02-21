@@ -1,17 +1,8 @@
-import { HttpRouter, HttpServer, HttpServerResponse } from "@effect/platform"
+import { HttpServer } from "@effect/platform"
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node"
 import { Effect, Layer } from "effect"
 import { createServer } from "node:http"
-import { GUIDE_TEXT } from "./content.js"
-
-const router = HttpRouter.empty.pipe(
-  HttpRouter.get(
-    "/",
-    Effect.succeed(
-      HttpServerResponse.text(GUIDE_TEXT)
-    )
-  )
-)
+import { router } from "./worker.js"
 
 const app = router.pipe(HttpServer.serve())
 

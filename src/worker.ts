@@ -5,7 +5,16 @@ import { GUIDE_TEXT } from "./content.js"
 const router = HttpRouter.empty.pipe(
   HttpRouter.get(
     "/",
-    Effect.succeed(HttpServerResponse.text(GUIDE_TEXT))
+    Effect.succeed(
+      HttpServerResponse.text(GUIDE_TEXT, {
+        contentType: "text/plain; charset=utf-8",
+        headers: { "Cache-Control": "public, max-age=3600" },
+      })
+    )
+  ),
+  HttpRouter.get(
+    "/health",
+    HttpServerResponse.json({ ok: true })
   )
 )
 
