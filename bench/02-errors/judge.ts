@@ -2,6 +2,7 @@ import { Effect } from "effect"
 import { FileSystem } from "@effect/platform"
 import { NodeFileSystem } from "@effect/platform-node"
 import { rule, tallyScore, matchesAny } from "../lib/score.js"
+import { ruleAbsent } from "../lib/rules.js"
 
 const mainFile = "main.ts"
 
@@ -18,6 +19,11 @@ const judge = Effect.gen(function* () {
     rule("uses Schema.TaggedError", matchesAny(source, [/Schema\.TaggedError/])),
     rule("uses Effect.catchTag", matchesAny(source, [/Effect\.catchTag\(/])),
     rule("uses NodeRuntime.runMain", matchesAny(source, [/NodeRuntime\.runMain/])),
+    ruleAbsent("no async functions", source, [/\basync function\b/]),
+    ruleAbsent("no try/catch", source, [/\btry\b/, /\bcatch\b/]),
+    ruleAbsent("no throw new Error", source, [/throw new Error/]),
+    ruleAbsent("no Promise constructors", source, [/Promise</, /new Promise/]),
+    ruleAbsent("no .then chains", source, [/\.then\(/]),
   ]
 
   return tallyScore(rules)
