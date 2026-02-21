@@ -232,6 +232,226 @@ Don't build these upfront. Prove the content works first.
 
 ---
 
+## How to test your skill endpoint
+
+Your skill endpoint is a product. Products need tests — not just unit tests on routes, but end-to-end evidence that the content actually changes agent behavior.
+
+### The A/B benchmark approach
+
+The core idea: run the same prompt twice — once without the skill endpoint (baseline), once with it (treatment) — and compare scores.
+
+```
+bench/
+  01-hello/
+    prompt.md       — task description for the agent
+    judge.ts        — deterministic scoring function
+    expected/       — reference solution (must score 100%)
+    baseline.ts     — raw agent output WITHOUT the skill endpoint
+    treatment.ts    — raw agent output WITH the skill endpoint
+  run.ts            — orchestrator: imports judges, runs them, tallies results
+  lib/score.ts      — shared utilities: rule(), tallyScore(), matchesAny()
+  lib/rules.ts      — helpers: ruleAbsent() for anti-pattern checks
+  AB-RESULTS.md     — published A/B deltas per task
+```
+
+#### Step 1: Write the prompt
+
+Each task gets a `prompt.md` — a plain-English description of what the agent should build. Include explicit requirements so the judge has something to check:
+
+```markdown
+# Task 04: Schema Validation
+
+Build a Schema-based validation module.
+
+Requirements:
+- Use Schema.Class for domain types.
+- Use Schema.brand for branded types.
+- Use Schema.decodeUnknown for parsing.
+- No Zod, no io-ts, no manual validation.
+```
+
+#### Step 2: Build the judge
+
+The judge is a pure function: source text in, score out. Keep it simple — regex over source text. AST parsing only when regex is genuinely ambiguous.
+
+```typescript
+import { rule, tallyScore, matchesAny } from "../lib/score.js"
+import { ruleAbsent } from "../lib/rules.js"
+
+// Positive rules: patterns that MUST appear
+rule("uses Schema.Class", matchesAny(source, [/Schema\.Class/]))
+rule("uses Schema.brand", matchesAny(source, [/Schema\.brand/]))
+
+// Negative rules: patterns that must NOT appear
+ruleAbsent("no manual validation", source, [/typeof\s+\w+\s*===/, /instanceof/])
+ruleAbsent("no try/catch", source, [/\btry\b/, /\bcatch\b/])
+
+return tallyScore(rules)
+```
+
+Scoring utilities:
+
+| Utility | Purpose |
+|---|---|
+| `rule(name, bool)` | Create a named rule result |
+| `matchesAny(source, patterns)` | True if any regex/string matches |
+| `ruleAbsent(name, source, patterns)` | True if NO pattern matches (anti-pattern check) |
+| `tallyScore(rules)` | Count passes, compute percentage |
+
+#### Step 3: Collect baseline and treatment outputs
+
+1. **Baseline.** Give the agent the prompt with no skill endpoint in context. Save its raw output to `baseline.ts`.
+2. **Treatment.** Give the same agent the same prompt, but wire the skill endpoint into its system prompt. Save raw output to `treatment.ts`.
+3. **Expected.** Write the ideal solution by hand. Place it in `expected/`. It must score 100% against the judge — if it doesn't, your judge has a bug.
+
+#### Step 4: Run and compare
+
+```bash
+bun bench/run.ts
+```
+
+The orchestrator imports each judge, runs it against `expected/`, and reports scores. For A/B comparison, run the judge against both `baseline.ts` and `treatment.ts` artifacts.
+
+Publish results in `bench/AB-RESULTS.md`:
+
+```markdown
+| Task           | Baseline     | Treatment     | Delta |
+| ---            | ---          | ---           | ---   |
+| 01-hello       | 100% (8/8)   | 100% (8/8)   | +0%   |
+| 03-service     | 75% (12/16)  | 88% (14/16)  | +13%  |
+| 05-full-stack  | 48% (10/21)  | 86% (18/21)  | +38%  |
+```
+
+#### Step 5: Close the feedback loop
+
+Every benchmark failure becomes one of:
+
+- **A content fix.** The endpoint didn't mention the pattern. Add it to rules/examples/anti-patterns.
+- **A new anti-pattern entry.** The agent made a predictable mistake. Catalog it as WRONG → RIGHT.
+- **A judge refinement.** The judge was too strict or too loose. Adjust the regex.
+
+Run again. Repeat until the treatment delta is significant across all tasks.
+
+> **Key principle:** If the delta is small, fix content — not infrastructure. The benchmark exists to make content quality measurable.
+
+---
+
+## Content negotiation
+
+A skill endpoint primarily serves `text/plain`. But different consumers have different needs. Use the `Accept` header to serve the right format without separate routes.
+
+### Supported formats
+
+| Accept header | Response format | Content-Type | Use case |
+|---|---|---|---|
+| `text/plain` (default) | Raw text | `text/plain; charset=utf-8` | AI agents, curl, scripts |
+| `text/html` | Styled `<pre>` wrapper | `text/html; charset=utf-8` | Browser preview, human readers |
+| `application/json` | JSON envelope | `application/json` | Programmatic consumers, dashboards |
+
+### Negotiation logic
+
+The server inspects the `Accept` header on every content route and responds accordingly:
+
+```
+Accept: text/plain     →  raw text (the default, and the primary audience)
+Accept: text/html      →  HTML page wrapping the text in <pre> with minimal CSS
+Accept: application/json →  JSON envelope with metadata
+(no Accept header)     →  text/plain
+```
+
+Priority: `text/html` > `application/json` > `text/plain`. If the client sends `Accept: text/html`, always serve HTML — even if `application/json` is also present. This ensures browsers always get a readable page.
+
+### The JSON envelope
+
+When `Accept: application/json` is present (and `text/html` is not), wrap the content in a structured envelope:
+
+```json
+{
+  "ok": true,
+  "route": "/rules",
+  "tokens": 842,
+  "content": "RULE 1 — Use Effect.fn for all named functions..."
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `ok` | boolean | Always `true` for successful responses |
+| `route` | string | The canonical route path |
+| `tokens` | number | Estimated token count for the content |
+| `content` | string | The full text content (same as text/plain body) |
+
+This is useful for agents or tooling that want metadata alongside the content — especially the token count — without parsing headers.
+
+### The HTML wrapper
+
+For browser visitors, wrap the plain text in a minimal, readable HTML page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>effect-first</title>
+  <style>
+    body { margin:2rem auto; max-width:80ch;
+           font:14px/1.6 monospace; background:#0d1117; color:#c9d1d9 }
+    a { color:#58a6ff }
+    pre { white-space:pre-wrap; word-wrap:break-word }
+  </style>
+</head>
+<body><pre>{{escaped content}}</pre></body>
+</html>
+```
+
+The content is HTML-escaped (`&`, `<`, `>`) and placed inside `<pre>` tags. No Markdown rendering, no JavaScript, no external dependencies. The page is self-contained and loads instantly.
+
+### Shared headers
+
+All formats include the same cache and metadata headers:
+
+```
+Cache-Control: public, max-age=3600
+X-Token-Count: 842
+```
+
+### Implementation pattern
+
+Content negotiation belongs in a single `textResponse` helper that all routes share:
+
+```typescript
+const textResponse = (text: string, status = 200) =>
+  Effect.gen(function* () {
+    const request = yield* HttpServerRequest.HttpServerRequest
+    const accept = request.headers["accept"] ?? ""
+    const wantJson = accept.includes("application/json") && !accept.includes("text/html")
+    const wantHtml = accept.includes("text/html")
+    const tokens = estimateTokens(text)
+
+    if (wantJson) return yield* HttpServerResponse.json({ ok: true, route, tokens, content: text })
+    const body = wantHtml ? wrapHtml(text) : text
+    return HttpServerResponse.text(body, {
+      contentType: wantHtml ? "text/html; charset=utf-8" : "text/plain; charset=utf-8",
+      headers: { "Cache-Control": "public, max-age=3600", "X-Token-Count": String(tokens) },
+    })
+  })
+```
+
+Every content route calls `textResponse(TEXT_CONSTANT)`. Negotiation is centralized, consistent, and invisible to the content layer.
+
+### When to add content negotiation
+
+Don't build this on day one. The priority order:
+
+1. **text/plain** — Ship this first. It's the entire point.
+2. **HTML wrapper** — Add when you (or users) want to preview content in a browser.
+3. **JSON envelope** — Add when programmatic consumers need token counts or metadata.
+
+Content negotiation is a graduated enhancement. Start with plain text serving `text/plain; charset=utf-8` on every route. Layer in HTML and JSON when there's a real consumer for them.
+
+---
+
 ## Non-goals
 
 - **Not documentation.** Your framework has docs. This is a cheat code.
