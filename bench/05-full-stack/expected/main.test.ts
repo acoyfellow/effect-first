@@ -9,7 +9,7 @@ describe("Greeter", () => {
       const greeter = yield* Greeter
       return yield* greeter.greet("Ada")
     }).pipe(
-      Effect.provide(Greeter.layer),
+      Effect.provide(Greeter.testLayer),
       Effect.flatMap((greeting) =>
         Effect.sync(() => {
           expect(greeting.message).toContain("Hello")
