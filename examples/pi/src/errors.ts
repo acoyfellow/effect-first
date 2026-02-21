@@ -1,11 +1,11 @@
 import { Schema } from "effect"
 
-export class NameTooShortError extends Schema.TaggedError<NameTooShortError>()(
-  "NameTooShortError",
-  { name: Schema.String, minLength: Schema.Number }
+export class EndpointUnreachableError extends Schema.TaggedError<EndpointUnreachableError>()(
+  "EndpointUnreachableError",
+  { url: Schema.String, reason: Schema.String }
 ) {}
 
-export class GreetingFailedError extends Schema.TaggedError<GreetingFailedError>()(
-  "GreetingFailedError",
-  { cause: Schema.String }
+export class HealthDegradedError extends Schema.TaggedError<HealthDegradedError>()(
+  "HealthDegradedError",
+  { url: Schema.String, successRate: Schema.Number, threshold: Schema.Number }
 ) {}
