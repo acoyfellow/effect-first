@@ -10,11 +10,15 @@ import { HTTP_CLIENT_TEXT } from "./content/http-client.js"
 import { SQL_TEXT } from "./content/sql.js"
 import { CLI_TEXT } from "./content/cli.js"
 import { STREAMS_TEXT } from "./content/streams.js"
+import { CONCURRENCY_TEXT } from "./content/concurrency.js"
+import { RESOURCES_TEXT } from "./content/resources.js"
 import { GUIDE_TEXT } from "./content.js"
+
+const BYTES_PER_TOKEN = 3.3
 
 const estimateTokens = (text: string) => {
   const bytes = new TextEncoder().encode(text).length
-  return Math.max(1, Math.ceil(bytes / 4))
+  return Math.max(1, Math.ceil(bytes / BYTES_PER_TOKEN))
 }
 
 const textResponse = (text: string, status = 200) =>
@@ -39,6 +43,8 @@ const MODULES: Record<string, string> = {
   sql: SQL_TEXT,
   cli: CLI_TEXT,
   streams: STREAMS_TEXT,
+  concurrency: CONCURRENCY_TEXT,
+  resources: RESOURCES_TEXT,
   full: GUIDE_TEXT,
 }
 
@@ -53,6 +59,8 @@ const router = HttpRouter.empty.pipe(
   HttpRouter.get("/sql", textResponse(SQL_TEXT)),
   HttpRouter.get("/cli", textResponse(CLI_TEXT)),
   HttpRouter.get("/streams", textResponse(STREAMS_TEXT)),
+  HttpRouter.get("/concurrency", textResponse(CONCURRENCY_TEXT)),
+  HttpRouter.get("/resources", textResponse(RESOURCES_TEXT)),
   HttpRouter.get("/full", textResponse(GUIDE_TEXT)),
   HttpRouter.get(
     "/bundle",
