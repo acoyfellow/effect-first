@@ -1,5 +1,5 @@
-import { HttpApp, HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
-import { Effect } from "effect"
+import { Headers, HttpApp, HttpRouter, HttpServerRequest, HttpServerResponse } from "@effect/platform"
+import { Effect, Option } from "effect"
 import { INDEX_TEXT } from "./content/index.js"
 import { RULES_TEXT } from "./content/rules.js"
 import { REFERENCE_TEXT } from "./content/reference.js"
@@ -27,15 +27,36 @@ const wrapHtml = (text: string) =>
 const textResponse = (text: string, status = 200) =>
   Effect.gen(function* () {
     const request = yield* HttpServerRequest.HttpServerRequest
-    const accept = request.headers["accept"] ?? ""
+    const accept = Option.getOrElse(Headers.get(request.headers, "accept"), () => "")
+    const wantJson = accept.includes("application/json") && !accept.includes("text/html")
     const wantHtml = accept.includes("text/html")
+    const tokens = estimateTokens(text)
+
+    if (wantJson) {
+      return HttpServerResponse.json(
+        {
+          ok: true,
+          route: new URL(request.url, "http://localhost").pathname,
+          tokens,
+          content: text,
+        },
+        {
+          status,
+          headers: {
+            "Cache-Control": "public, max-age=3600",
+            "X-Token-Count": String(tokens),
+          },
+        }
+      )
+    }
+
     const body = wantHtml ? wrapHtml(text) : text
     return HttpServerResponse.text(body, {
       status,
       contentType: wantHtml ? "text/html; charset=utf-8" : "text/plain; charset=utf-8",
       headers: {
         "Cache-Control": "public, max-age=3600",
-        "X-Token-Count": String(estimateTokens(text)),
+        "X-Token-Count": String(tokens),
       },
     })
   })
@@ -55,24 +76,57 @@ const MODULES: Record<string, string> = {
   full: GUIDE_TEXT,
 }
 
+const validateVersion = (request: HttpServerRequest.HttpServerRequest) => {
+  const url = new URL(request.url, "http://localhost")
+  const version = url.searchParams.get("version")
+  if (!version) {
+    return null
+  }
+  const normalized = version.trim()
+  if (normalized === "latest" || normalized === "3") {
+    return null
+  }
+  return normalized
+}
+
+const withVersionGuard = (text: string) =>
+  Effect.gen(function* () {
+    const request = yield* HttpServerRequest.HttpServerRequest
+    const invalid = validateVersion(request)
+    if (invalid) {
+      return yield* textResponse(
+        `Unsupported version "${invalid}". Use ?version=latest or ?version=3.`,
+        400
+      )
+    }
+    return yield* textResponse(text)
+  })
+
 const router = HttpRouter.empty.pipe(
-  HttpRouter.get("/", textResponse(INDEX_TEXT)),
-  HttpRouter.get("/rules", textResponse(RULES_TEXT)),
-  HttpRouter.get("/reference", textResponse(REFERENCE_TEXT)),
-  HttpRouter.get("/examples", textResponse(EXAMPLES_TEXT)),
-  HttpRouter.get("/anti-patterns", textResponse(ANTI_PATTERNS_TEXT)),
-  HttpRouter.get("/http-server", textResponse(HTTP_SERVER_TEXT)),
-  HttpRouter.get("/http-client", textResponse(HTTP_CLIENT_TEXT)),
-  HttpRouter.get("/sql", textResponse(SQL_TEXT)),
-  HttpRouter.get("/cli", textResponse(CLI_TEXT)),
-  HttpRouter.get("/streams", textResponse(STREAMS_TEXT)),
-  HttpRouter.get("/concurrency", textResponse(CONCURRENCY_TEXT)),
-  HttpRouter.get("/resources", textResponse(RESOURCES_TEXT)),
-  HttpRouter.get("/full", textResponse(GUIDE_TEXT)),
+  HttpRouter.get("/", withVersionGuard(INDEX_TEXT)),
+  HttpRouter.get("/rules", withVersionGuard(RULES_TEXT)),
+  HttpRouter.get("/reference", withVersionGuard(REFERENCE_TEXT)),
+  HttpRouter.get("/examples", withVersionGuard(EXAMPLES_TEXT)),
+  HttpRouter.get("/anti-patterns", withVersionGuard(ANTI_PATTERNS_TEXT)),
+  HttpRouter.get("/http-server", withVersionGuard(HTTP_SERVER_TEXT)),
+  HttpRouter.get("/http-client", withVersionGuard(HTTP_CLIENT_TEXT)),
+  HttpRouter.get("/sql", withVersionGuard(SQL_TEXT)),
+  HttpRouter.get("/cli", withVersionGuard(CLI_TEXT)),
+  HttpRouter.get("/streams", withVersionGuard(STREAMS_TEXT)),
+  HttpRouter.get("/concurrency", withVersionGuard(CONCURRENCY_TEXT)),
+  HttpRouter.get("/resources", withVersionGuard(RESOURCES_TEXT)),
+  HttpRouter.get("/full", withVersionGuard(GUIDE_TEXT)),
   HttpRouter.get(
     "/bundle",
     Effect.gen(function* () {
       const request = yield* HttpServerRequest.HttpServerRequest
+      const invalid = validateVersion(request)
+      if (invalid) {
+        return yield* textResponse(
+          `Unsupported version "${invalid}". Use ?version=latest or ?version=3.`,
+          400
+        )
+      }
       const url = new URL(request.url, "http://localhost")
       const modules = (url.searchParams.get("modules") ?? "")
         .split(",")

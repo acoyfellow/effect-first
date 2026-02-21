@@ -295,3 +295,64 @@ it.effect("GET /bundle with invalid modules returns 400", () =>
     )
   )
 )
+
+it.effect("GET /rules with Accept: application/json returns JSON envelope", () =>
+  Effect.promise(() =>
+    handler(
+      new Request("http://localhost/rules", {
+        headers: { Accept: "application/json" },
+      })
+    )
+  ).pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.json()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(200)
+            expect(body).toMatchObject({
+              ok: true,
+              route: "/rules",
+            })
+            expect(typeof body.tokens).toBe("number")
+            expect(body.content).toContain("RULE 1")
+          })
+        )
+      )
+    )
+  )
+)
+
+it.effect("GET /rules?version=latest returns 200", () =>
+  get("/rules?version=latest").pipe(
+    Effect.flatMap((res) =>
+      Effect.sync(() => {
+        expect(res.status).toBe(200)
+      })
+    )
+  )
+)
+
+it.effect("GET /rules?version=3 returns 200", () =>
+  get("/rules?version=3").pipe(
+    Effect.flatMap((res) =>
+      Effect.sync(() => {
+        expect(res.status).toBe(200)
+      })
+    )
+  )
+)
+
+it.effect("GET /rules?version=unknown returns 400", () =>
+  get("/rules?version=2").pipe(
+    Effect.flatMap((res) =>
+      Effect.promise(() => res.text()).pipe(
+        Effect.flatMap((body) =>
+          Effect.sync(() => {
+            expect(res.status).toBe(400)
+            expect(body).toContain("Unsupported version")
+          })
+        )
+      )
+    )
+  )
+)
