@@ -29,7 +29,7 @@ const judge = Effect.gen(function* () {
       matchesAny(source, [/Effect\.provide\(/]) && matchesAny(source, [/NodeRuntime\.runMain/])
     ),
     rule("uses NodeRuntime.runMain", matchesAny(source, [/NodeRuntime\.runMain/])),
-    rule("defines Clock tag", matchesAny(source, [/Context\.Tag\([^\n]*Clock/])),
+    rule("defines Clock tag", matchesAny(source, [/Context\.Tag\([^\n]*@[^\"]+\/Clock/])),
     rule("tag ID is globally qualified", matchesAny(source, [/Context\.Tag\(["']@[\w-]+\//])),
     rule("defines testLayer", matchesAny(source, [/testLayer/])),
     rule("service-driven workflow", matchesAny(source, [/Context\.Tag\(/])),

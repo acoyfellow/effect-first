@@ -1,4 +1,4 @@
-import { Config, Context, Effect, Layer, Schema } from "effect"
+import { Context, Effect, Layer, Schema } from "effect"
 import { NodeRuntime } from "@effect/platform-node"
 
 const AppName = Schema.String.pipe(Schema.brand("AppName"))
@@ -21,7 +21,7 @@ class Greeter extends Context.Tag("@app/Greeter")<
   static readonly layer = Layer.effect(
     Greeter,
     Effect.gen(function* () {
-      const appName = yield* Config.string("APP_NAME")
+      const appName = yield* Schema.Config.string("APP_NAME")
       return Greeter.of({
         greet: Effect.fn("Greeter.greet")(function* (name: string) {
           if (name.length < 2) {
