@@ -1,18 +1,12 @@
 export const HTTP_CLIENT_TEXT = `# Effect-First TypeScript — HTTP Client
 
-Effect’s HttpClient is a service-based, composable HTTP client with typed errors, retries, and schema decoding built in.
-
 Package: @effect/platform (HttpClient, HttpClientRequest, HttpClientResponse, HttpClientError)
-
----
 
 ## Imports
 
     import { HttpClient, HttpClientRequest, HttpClientResponse, FetchHttpClient } from "@effect/platform"
     import { NodeHttpClient } from "@effect/platform-node"
     import { Effect, Schema } from "effect"
-
----
 
 ## Basic GET
 
@@ -25,23 +19,18 @@ Package: @effect/platform (HttpClient, HttpClientRequest, HttpClientResponse, Ht
     // Provide the client layer
     fetchUser("u-1").pipe(Effect.provide(FetchHttpClient.layer))
 
----
-
 ## POST with JSON body
 
     const createUser = Effect.fn("createUser")(function* (name: string) {
       const client = yield* HttpClient.HttpClient
-      const response = yield* client.post("https://api.example.com/users", {
-        body: HttpClientRequest.jsonBody({ name }),
-      })
+      const request = HttpClientRequest.post("https://api.example.com/users").pipe(
+        HttpClientRequest.jsonBody({ name })
+      )
+      const response = yield* client.execute(request)
       return yield* HttpClientResponse.schemaBodyJson(User)(response)
     })
 
----
-
 ## HttpApiClient — typed client from HttpApi definition
-
-If you defined your server with HttpApi, generate a fully typed client:
 
     import { HttpApiClient } from "@effect/platform"
 
@@ -51,8 +40,6 @@ If you defined your server with HttpApi, generate a fully typed client:
       })
       const user = yield* client.users.findById({ path: { id: "u-1" } })
     })
-
----
 
 ## Resilience — retry + timeout
 
@@ -92,8 +79,6 @@ If you defined your server with HttpApi, generate a fully typed client:
 
     FetchHttpClient.layer                — uses globalThis.fetch (browser, Cloudflare Workers, Bun)
     NodeHttpClient.layer                 — uses Node.js undici
-
----
 
 ## Anti-patterns
 
