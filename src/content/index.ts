@@ -30,6 +30,12 @@ Endpoints (all text/plain unless noted):
   /streams     ~1100 tok  Stream, Sink, Channel: creation, transforms, consumption.
                            Use: processing sequences of values with backpressure.
 
+  /concurrency ~1000 tok  Structured concurrency: Effect.all, forEach, fibers, race.
+                           Use: parallel work, fork/join patterns, cancellations.
+
+  /resources   ~900 tok   Resource lifecycle: Scope, acquireRelease, Layer.scoped, Pool.
+                           Use: cleanup guarantees for connections, files, handles.
+
   /full        ~3500 tok  Core sections combined (rules + reference + examples + anti-patterns).
                            Use: you have token budget and want the core in one fetch.
 
