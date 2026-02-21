@@ -7,8 +7,8 @@ import { BookmarksApi } from "./api.js"
 import { ApiLive } from "./api-handlers.js"
 
 const TestApiLive = HttpApiBuilder.serve().pipe(
-  Layer.provide(NodeHttpServer.layerTest),
-  Layer.provide(ApiLive)
+  Layer.provide(ApiLive),
+  Layer.provideMerge(NodeHttpServer.layerTest)
 )
 
 it.effect("creates and lists bookmarks", () =>
