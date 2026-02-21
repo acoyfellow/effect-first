@@ -21,17 +21,24 @@ const estimateTokens = (text: string) => {
   return Math.max(1, Math.ceil(bytes / BYTES_PER_TOKEN))
 }
 
+const wrapHtml = (text: string) =>
+  `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>effect-first</title><style>body{margin:2rem auto;max-width:80ch;font:14px/1.6 monospace;background:#0d1117;color:#c9d1d9}a{color:#58a6ff}pre{white-space:pre-wrap;word-wrap:break-word}</style></head><body><pre>${text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre></body></html>`
+
 const textResponse = (text: string, status = 200) =>
-  Effect.succeed(
-    HttpServerResponse.text(text, {
+  Effect.gen(function* () {
+    const request = yield* HttpServerRequest.HttpServerRequest
+    const accept = request.headers["accept"] ?? ""
+    const wantHtml = accept.includes("text/html")
+    const body = wantHtml ? wrapHtml(text) : text
+    return HttpServerResponse.text(body, {
       status,
-      contentType: "text/plain; charset=utf-8",
+      contentType: wantHtml ? "text/html; charset=utf-8" : "text/plain; charset=utf-8",
       headers: {
         "Cache-Control": "public, max-age=3600",
         "X-Token-Count": String(estimateTokens(text)),
       },
     })
-  )
+  })
 
 const MODULES: Record<string, string> = {
   rules: RULES_TEXT,
