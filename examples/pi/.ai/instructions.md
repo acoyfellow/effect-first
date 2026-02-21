@@ -18,3 +18,10 @@ curl -s https://effect-first.coey.dev/full
 ```
 
 Apply every rule from the reference. No exceptions.
+
+This project demonstrates Config-driven services with retry/scheduling patterns.
+Key patterns to follow:
+- Schema.Config for validated environment variables (Rule 6)
+- Schedule.exponential + Schedule.recurs for retry (Rule 7)
+- Effect.timeout for deadline enforcement (Rule 7)
+- Effect.fn second arg for composing retry/timeout on methods
