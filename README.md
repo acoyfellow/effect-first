@@ -13,7 +13,14 @@ Live at: https://effect-first.coey.dev
 | `/reference` | ~600 | Imports, primitives, type signatures, quick-lookup |
 | `/examples` | ~2000 | Copy-paste ready code patterns |
 | `/anti-patterns` | ~400 | "Never X → do Y" correction table |
-| `/full` | ~3500 | Complete reference, all sections combined |
+| `/http-server` | ~1700 | HttpApi declarative server guide |
+| `/http-client` | ~1100 | HttpClient service guide |
+| `/sql` | ~1650 | @effect/sql guide |
+| `/cli` | ~1250 | CLI + Command execution guide |
+| `/streams` | ~1400 | Stream, Sink, Channel guide |
+| `/concurrency` | ~450 | Concurrency primitives |
+| `/resources` | ~450 | Resource lifecycle + Scope |
+| `/full` | ~7000 | Complete reference, all sections combined |
 | `/health` | — | JSON `{ "ok": true }` |
 
 Designed for token-aware agents. Fetch only what you need.
@@ -29,7 +36,16 @@ The `examples/` directory shows how to wire different agents to use effect-first
 - **[`examples/copilot/`](examples/copilot/)** — GitHub Copilot (`.github/copilot-instructions.md`)
 - **[`examples/pi/`](examples/pi/)** — Pi (`.ai/instructions.md`)
 
-Each example includes a tool-specific config file and an identical working project that demonstrates the output.
+Each example includes a tool-specific config file and a unique working project that demonstrates different Effect patterns:
+
+| Example | Unique feature |
+|---|---|
+| Shelley | Base greeter CLI — Effect.fn, Schema.TaggedError, Context.Tag, Layer, Schema.Class |
+| Claude Code | Base greeter CLI — CLAUDE.md wiring |
+| Cursor | Base greeter CLI — .cursor/rules MDC wiring |
+| Codex | Greeter + TodoRepo — multi-service composition with Layer.mergeAll |
+| Copilot | Greeter + Stream log processor — Stream, Sink, aggregation pipelines |
+| Pi | Health monitor — Schema.Config, Schedule.exponential, Effect.retry, Effect.timeout |
 
 ## Run locally
 
