@@ -13,13 +13,12 @@ const readMain = Effect.gen(function* () {
 const judge = Effect.gen(function* () {
   const source = yield* readMain
   const rules = [
-    rule("uses Effect.fn", matchesAny(source, [/Effect\.fn\(/])),
+    rule("uses Context.Tag", matchesAny(source, [/Context\.Tag\(/])),
+    rule("uses Layer.succeed", matchesAny(source, [/Layer\.succeed\(/])),
     rule("uses Effect.gen", matchesAny(source, [/Effect\.gen\(/])),
-    rule("uses Schema.TaggedError", matchesAny(source, [/Schema\.TaggedError/])),
-    rule("uses Schema.Class", matchesAny(source, [/Schema\.Class/])),
-    rule("uses Context.Tag+Layer", matchesAny(source, [/Context\.Tag/, /Layer\./])),
-    rule("provides layers at entry", matchesAny(source, [/Effect\.provide\(/, /NodeRuntime\.runMain/])),
+    rule("provides layer at entry", matchesAny(source, [/Effect\.provide\(/, /NodeRuntime\.runMain/])),
     rule("uses NodeRuntime.runMain", matchesAny(source, [/NodeRuntime\.runMain/])),
+    rule("defines Clock tag", matchesAny(source, [/Clock/]))
   ]
 
   return tallyScore(rules)
