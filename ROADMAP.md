@@ -88,7 +88,7 @@ Each agent platform has its own config mechanism. Examples for each:
 | Cursor | `.cursor/rules/*.mdc` | Planned |
 | Codex | `AGENTS.md` | Planned (same as Shelley?) |
 | Copilot | `.github/copilot-instructions.md` | Planned |
-| Windsurf | `.windsurfrules` | Planned |
+| Pi | `AGENTS.md` | Planned (github.com/badlogic/pi-mono) |
 | Custom | Fetch in system prompt | Planned |
 
 Each example is a working project (not just config), so people can see the output.
