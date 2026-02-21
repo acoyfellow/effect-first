@@ -32,6 +32,9 @@ Endpoints (all text/plain unless noted):
   /full        ~3500 tok  Core sections combined (rules + reference + examples + anti-patterns).
                            Use: you have token budget and want the core in one fetch.
 
+  /bundle?modules=rules,reference  Combine modules in one response (comma-separated names).
+                           Use: build a custom bundle in one fetch.
+
   /health      JSON       { "ok": true } — uptime check.
 
 Tip: fetch /rules + /reference (~1400 tok) for most tasks. Add /examples only when generating new code.
