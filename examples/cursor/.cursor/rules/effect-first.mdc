@@ -23,3 +23,15 @@ curl -s https://effect-first.coey.dev/full
 ```
 
 Apply every rule from the reference. No exceptions.
+
+## Project-specific context
+
+This project is a Schema validation CLI. Key patterns:
+
+- **SchemaRegistry** service: Context.Tag + Layer resolving schema names to Effect Schema instances
+- **Validator** service: depends on SchemaRegistry via Layer.provide
+- **Branded types**: Email, Sku, ZipCode, Age, Price — use Schema.brand + Schema.pattern
+- **Schema.Class**: User, Product, Address, ValidationResult — structured data
+- **Schema.TaggedError**: SchemaNotFoundError, JsonParseError, ValidationFailedError
+- **Error formatting**: use ArrayFormatter.formatErrorSync from effect/ParseResult to turn parse errors into string messages
+- **Test layers**: every service has a static testLayer; tests use @effect/vitest it.effect + Effect.provide(Service.testLayer)

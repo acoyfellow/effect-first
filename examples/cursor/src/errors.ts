@@ -1,11 +1,19 @@
 import { Schema } from "effect"
 
-export class NameTooShortError extends Schema.TaggedError<NameTooShortError>()(
-  "NameTooShortError",
-  { name: Schema.String, minLength: Schema.Number }
+export class SchemaNotFoundError extends Schema.TaggedError<SchemaNotFoundError>()(
+  "SchemaNotFoundError",
+  { name: Schema.String, available: Schema.Array(Schema.String) }
 ) {}
 
-export class GreetingFailedError extends Schema.TaggedError<GreetingFailedError>()(
-  "GreetingFailedError",
-  { cause: Schema.String }
+export class JsonParseError extends Schema.TaggedError<JsonParseError>()(
+  "JsonParseError",
+  { input: Schema.String, reason: Schema.String }
+) {}
+
+export class ValidationFailedError extends Schema.TaggedError<ValidationFailedError>()(
+  "ValidationFailedError",
+  {
+    schemaName: Schema.String,
+    errors: Schema.Array(Schema.String),
+  }
 ) {}
