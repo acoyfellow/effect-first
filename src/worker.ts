@@ -13,6 +13,7 @@ import { STREAMS_TEXT } from "./content/streams.js"
 import { CONCURRENCY_TEXT } from "./content/concurrency.js"
 import { RESOURCES_TEXT } from "./content/resources.js"
 import { GUIDE_TEXT } from "./content.js"
+import { toHtml } from "./html.js"
 
 const BYTES_PER_TOKEN = 3.3
 
@@ -21,10 +22,7 @@ const estimateTokens = (text: string) => {
   return Math.max(1, Math.ceil(bytes / BYTES_PER_TOKEN))
 }
 
-const wrapHtml = (text: string) =>
-  `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>effect-first</title><style>body{margin:2rem auto;max-width:80ch;font:14px/1.6 monospace;background:#0d1117;color:#c9d1d9}a{color:#58a6ff}pre{white-space:pre-wrap;word-wrap:break-word}</style></head><body><pre>${text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre></body></html>`
-
-const textResponse = (text: string, status = 200) =>
+const textResponse = (text: string, route = "/", status = 200) =>
   Effect.gen(function* () {
     const request = yield* HttpServerRequest.HttpServerRequest
     const accept = request.headers["accept"] ?? ""
@@ -50,7 +48,7 @@ const textResponse = (text: string, status = 200) =>
       )
     }
 
-    const body = wantHtml ? wrapHtml(text) : text
+    const body = wantHtml ? toHtml(text, route) : text
     return HttpServerResponse.text(body, {
       status,
       contentType: wantHtml ? "text/html; charset=utf-8" : "text/plain; charset=utf-8",
@@ -89,33 +87,34 @@ const validateVersion = (request: HttpServerRequest.HttpServerRequest) => {
   return normalized
 }
 
-const withVersionGuard = (text: string) =>
+const withVersionGuard = (text: string, route: string) =>
   Effect.gen(function* () {
     const request = yield* HttpServerRequest.HttpServerRequest
     const invalid = validateVersion(request)
     if (invalid) {
       return yield* textResponse(
         `Unsupported version "${invalid}". Use ?version=latest or ?version=3.`,
+        route,
         400
       )
     }
-    return yield* textResponse(text)
+    return yield* textResponse(text, route)
   })
 
 const router = HttpRouter.empty.pipe(
-  HttpRouter.get("/", withVersionGuard(INDEX_TEXT)),
-  HttpRouter.get("/rules", withVersionGuard(RULES_TEXT)),
-  HttpRouter.get("/reference", withVersionGuard(REFERENCE_TEXT)),
-  HttpRouter.get("/examples", withVersionGuard(EXAMPLES_TEXT)),
-  HttpRouter.get("/anti-patterns", withVersionGuard(ANTI_PATTERNS_TEXT)),
-  HttpRouter.get("/http-server", withVersionGuard(HTTP_SERVER_TEXT)),
-  HttpRouter.get("/http-client", withVersionGuard(HTTP_CLIENT_TEXT)),
-  HttpRouter.get("/sql", withVersionGuard(SQL_TEXT)),
-  HttpRouter.get("/cli", withVersionGuard(CLI_TEXT)),
-  HttpRouter.get("/streams", withVersionGuard(STREAMS_TEXT)),
-  HttpRouter.get("/concurrency", withVersionGuard(CONCURRENCY_TEXT)),
-  HttpRouter.get("/resources", withVersionGuard(RESOURCES_TEXT)),
-  HttpRouter.get("/full", withVersionGuard(GUIDE_TEXT)),
+  HttpRouter.get("/", withVersionGuard(INDEX_TEXT, "/")),
+  HttpRouter.get("/rules", withVersionGuard(RULES_TEXT, "/rules")),
+  HttpRouter.get("/reference", withVersionGuard(REFERENCE_TEXT, "/reference")),
+  HttpRouter.get("/examples", withVersionGuard(EXAMPLES_TEXT, "/examples")),
+  HttpRouter.get("/anti-patterns", withVersionGuard(ANTI_PATTERNS_TEXT, "/anti-patterns")),
+  HttpRouter.get("/http-server", withVersionGuard(HTTP_SERVER_TEXT, "/http-server")),
+  HttpRouter.get("/http-client", withVersionGuard(HTTP_CLIENT_TEXT, "/http-client")),
+  HttpRouter.get("/sql", withVersionGuard(SQL_TEXT, "/sql")),
+  HttpRouter.get("/cli", withVersionGuard(CLI_TEXT, "/cli")),
+  HttpRouter.get("/streams", withVersionGuard(STREAMS_TEXT, "/streams")),
+  HttpRouter.get("/concurrency", withVersionGuard(CONCURRENCY_TEXT, "/concurrency")),
+  HttpRouter.get("/resources", withVersionGuard(RESOURCES_TEXT, "/resources")),
+  HttpRouter.get("/full", withVersionGuard(GUIDE_TEXT, "/full")),
   HttpRouter.get(
     "/bundle",
     Effect.gen(function* () {
@@ -124,6 +123,7 @@ const router = HttpRouter.empty.pipe(
       if (invalid) {
         return yield* textResponse(
           `Unsupported version "${invalid}". Use ?version=latest or ?version=3.`,
+          "/bundle",
           400
         )
       }
@@ -136,11 +136,12 @@ const router = HttpRouter.empty.pipe(
       if (parts.length === 0) {
         return yield* textResponse(
           "Missing or invalid ?modules=. Valid modules: " + Object.keys(MODULES).join(", "),
+          "/bundle",
           400
         )
       }
       const body = parts.join("\n\n---\n\n")
-      return yield* textResponse(body)
+      return yield* textResponse(body, "/bundle")
     })
   ),
   HttpRouter.get("/health", HttpServerResponse.json({ ok: true }))
