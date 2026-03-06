@@ -201,6 +201,7 @@ export const toHtml = (
     readonly lead?: string
     readonly actions?: ReadonlyArray<{ readonly href: string; readonly label: string }>
     readonly appendixHtml?: string
+    readonly scripts?: ReadonlyArray<string>
   } = {}
 ) => {
   const actions =
@@ -213,6 +214,13 @@ export const toHtml = (
   const appendix = options.appendixHtml
     ? `<section class="appendix">${options.appendixHtml}</section>`
     : ""
+
+  const scriptTags =
+    options.scripts && options.scripts.length > 0
+      ? options.scripts
+          .map((src) => `<script async src="${escapeHtml(src)}" charset="utf-8"></script>`)
+          .join("\n  ")
+      : ""
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -232,6 +240,7 @@ export const toHtml = (
       ${appendix}
     </section>
   </main>
+  ${scriptTags}
 </body>
 </html>`
 }

@@ -142,7 +142,9 @@ const renderResearchAppendix = () => {
     (trial) => trial.winner === "local-only"
   ).length
 
-  return `<h2>Current status</h2>
+  return `<h2>Context</h2>
+<blockquote class="twitter-tweet"><a href="https://twitter.com/MichaelArnaldi/status/2027896616976281792"></a></blockquote>
+<h2>Current status</h2>
 <p><strong>Status:</strong> ${EXPERIMENT_RESULTS.status}. <strong>Current conclusion:</strong> ${EXPERIMENT_RESULTS.outcome}.</p>
 <p>${EXPERIMENT_RESULTS.summary}</p>
 <p><strong>What has been shown so far:</strong> the local-only arm won ${trialWins} out of ${EXPERIMENT_RESULTS.trials} internal trials on <code>${EXPERIMENT_RESULTS.taskId}</code>.</p>
@@ -169,6 +171,7 @@ const renderRoot = () =>
         { href: `${githubBase}/examples/codex`, label: "Open codex example" },
       ],
       appendixHtml: renderResearchAppendix(),
+      scripts: ["https://platform.twitter.com/widgets.js"],
     })
   )
 
