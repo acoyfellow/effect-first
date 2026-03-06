@@ -1,11 +1,5 @@
-import { Schema } from "effect"
+import { Data } from "effect"
 
-export class NameTooShortError extends Schema.TaggedError<NameTooShortError>()(
-  "NameTooShortError",
-  { name: Schema.String, minLength: Schema.Number }
-) {}
-
-export class GreetingFailedError extends Schema.TaggedError<GreetingFailedError>()(
-  "GreetingFailedError",
-  { cause: Schema.String }
-) {}
+export class InvalidNameError extends Data.TaggedError("InvalidNameError")<{
+  readonly reason: string
+}> {}

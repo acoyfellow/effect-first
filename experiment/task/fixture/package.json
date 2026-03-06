@@ -1,0 +1,16 @@
+{
+  "name": "effect-first-experiment-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run src/todo-repo.test.ts"
+  },
+  "dependencies": {
+    "effect": "4.0.0-beta.25"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.0"
+  }
+}

@@ -1,34 +1,12 @@
-# Example: Shelley + Effect-First
+# Shelley example
 
-A minimal Effect-first CLI built by Shelley using the effect-first.coey.dev reference.
+The Shelley example is the smallest runnable effect-first v4 project.
 
-## What this demonstrates
+It demonstrates:
 
-1. **AGENTS.md** — tells Shelley to fetch the Effect reference before writing code
-2. **The CLI** — a small but complete Effect program showing all core patterns:
-   - `Effect.fn` for named functions
-   - `Schema.TaggedError` for typed errors
-   - `Context.Tag` + `Layer` for services
-   - `Schema.Class` + branded types for data
-   - `Schema.Config` for configuration
-   - `@effect/vitest` for testing
+- a single `ServiceMap.Service`
+- a `Layer.succeed` implementation
+- a `Data.TaggedError`
+- targeted recovery with `Effect.catchTag`
 
-## Try it
-
-```bash
-npm install
-npm run build
-node dist/cli.js greet --name Alice
-node dist/cli.js greet --name Alice --shout
-npm test
-```
-
-## How it was made
-
-Shelley was given the AGENTS.md in this directory and asked to build a minimal CLI.
-The reference at effect-first.coey.dev provided all the patterns.
-
-
-## How the agent discovers this file
-
-Shelley reads `AGENTS.md` in the repo root. This README documents the resulting project.
+Use this project directly as the smallest concrete reference.

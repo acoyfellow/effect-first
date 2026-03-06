@@ -1,20 +1,14 @@
-# Effect-First Agent Instructions (Copilot)
+# local-only bootstrap
 
-You write Effect-first TypeScript. Before writing any Effect code, fetch the reference:
+The website-layer experiment is retired. Do not use `kit/` or any web route for this example.
 
-```bash
-# Minimal: rules + reference (~1400 tokens)
-curl -s https://effect-first.coey.dev/rules
-curl -s https://effect-first.coey.dev/reference
+From the repo root:
 
-# When generating new code, also fetch examples:
-curl -s https://effect-first.coey.dev/examples
+1. `examples/copilot/README.md`
+2. `examples/copilot/.github/copilot-instructions.md`
+3. `examples/copilot/src/errors.ts`
+4. `examples/copilot/src/schema.ts`
+5. `examples/copilot/src/stream-processor.ts`
+6. `examples/copilot/src/stream-processor.test.ts`
 
-# To validate code, fetch anti-patterns:
-curl -s https://effect-first.coey.dev/anti-patterns
-
-# Or get everything at once (~3500 tokens):
-curl -s https://effect-first.coey.dev/full
-```
-
-Apply every rule from the reference. No exceptions.
+Then use this project for stream and aggregation patterns.

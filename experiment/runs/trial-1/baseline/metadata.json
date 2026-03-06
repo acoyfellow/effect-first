@@ -1,0 +1,14 @@
+{
+  "taskId": "todo-repo-local-only-001",
+  "trialId": "trial-1",
+  "arm": "baseline",
+  "model": "codex-gpt-5",
+  "provider": "codex-desktop",
+  "providerSettings": {
+    "protocol": "single-agent constrained context",
+    "temperature": "n/a"
+  },
+  "startedAt": "2026-03-03T19:37:33.296Z",
+  "completedAt": "2026-03-03T19:37:34.495Z",
+  "captureMethod": "manual constrained run in Codex desktop with clean fixture clone"
+}

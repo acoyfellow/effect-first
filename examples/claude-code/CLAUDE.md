@@ -1,20 +1,14 @@
-# Effect-First Agent Instructions (Claude Code)
+# Local-Only Agent Instructions (Claude Code)
 
-You write Effect-first TypeScript. Before writing any Effect code, fetch the reference:
+The website-layer experiment is retired. Do not use any retired bootstrap layer or web route for this example.
 
-```bash
-# Minimal: rules + reference (~1400 tokens)
-curl -s https://effect-first.coey.dev/rules
-curl -s https://effect-first.coey.dev/reference
+From the repo root:
 
-# When generating new code, also fetch examples:
-curl -s https://effect-first.coey.dev/examples
+1. `examples/claude-code/README.md`
+2. `examples/claude-code/CLAUDE.md`
+3. `examples/claude-code/src/api.ts`
+4. `examples/claude-code/src/api-handlers.ts`
+5. `examples/claude-code/src/bookmark-repo.ts`
+6. `examples/claude-code/src/api.test.ts`
 
-# To validate code, fetch anti-patterns:
-curl -s https://effect-first.coey.dev/anti-patterns
-
-# Or get everything at once (~3500 tokens):
-curl -s https://effect-first.coey.dev/full
-```
-
-Apply every rule from the reference. No exceptions.
+Then use this project for API-shaped request, schema, and handler flows.

@@ -1,358 +1,124 @@
-import { it } from "@effect/vitest"
-import { Effect } from "effect"
-import { expect } from "vitest"
-import { INDEX_TEXT } from "./content/index.js"
+import { readFileSync } from "node:fs"
+import { describe, expect, it } from "vitest"
+import { CURRENT_HOMEPAGE, EXPERIMENT_RESULTS, LEGACY_ARCHIVE } from "./generated-site-content.js"
 import { handler } from "./worker.js"
 
-// Helper: GET a route and return the Response
-const get = (path: string) =>
-  Effect.promise(() => handler(new Request(`http://localhost${path}`)))
+const get = (path: string, headers?: HeadersInit) =>
+  handler(new Request(`http://localhost${path}`, headers ? { headers } : undefined))
 
-it.effect("GET / returns 200 with text/plain content-type", () =>
-  get("/").pipe(
-    Effect.flatMap((res) =>
-      Effect.sync(() => {
-        expect(res.status).toBe(200)
-        expect(res.headers.get("content-type")).toMatch(/text\/plain/)
-      })
-    )
-  )
-)
+describe("current site routes", () => {
+  it("GET / returns the research homepage and links to the active evidence plus /old", async () => {
+    const response = await get("/")
+    const body = await response.text()
 
-it.effect("GET / responds with the index text", () =>
-  get("/").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(body).toBe(INDEX_TEXT)
-            expect(body).toContain("effect-first.coey.dev")
-          })
-        )
-      )
-    )
-  )
-)
+    expect(response.status).toBe(200)
+    expect(response.headers.get("content-type")).toMatch(/text\/html/)
+    expect(body).toContain("effect-first research")
+    expect(body).toContain("definitive, citable evidence")
+    expect(body).toContain("/old")
+    expect(body).toContain("experiment/PROTOCOL.md")
+    expect(body).toContain("experiment/results.json")
+  })
 
-it.effect("GET / includes charset=utf-8 in content-type", () =>
-  get("/").pipe(
-    Effect.flatMap((res) =>
-      Effect.sync(() => {
-        expect(res.headers.get("content-type")).toMatch(/charset=utf-8/)
-      })
-    )
-  )
-)
+  it("GET /health returns JSON { ok: true }", async () => {
+    const response = await get("/health")
+    const body = await response.json()
 
-it.effect("GET / includes Cache-Control header", () =>
-  get("/").pipe(
-    Effect.flatMap((res) =>
-      Effect.sync(() => {
-        expect(res.headers.get("cache-control")).toBe("public, max-age=3600")
-      })
-    )
-  )
-)
+    expect(response.status).toBe(200)
+    expect(body).toEqual({ ok: true })
+  })
 
-it.effect("GET /rules returns 200 and contains RULE 1", () =>
-  get("/rules").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("RULE 1")
-          })
-        )
-      )
-    )
-  )
-)
+  it("retired public routes return 410 Gone", async () => {
+    for (const path of ["/bootstrap.txt", "/adopt", "/evals", "/evals.json"]) {
+      const response = await get(path)
+      const body = await response.text()
 
-it.effect("GET /reference returns 200 and contains Effect Primitives", () =>
-  get("/reference").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("Effect Primitives")
-          })
-        )
-      )
-    )
-  )
-)
+      expect(response.status).toBe(410)
+      expect(response.headers.get("content-type")).toMatch(/text\/plain/)
+      expect(body).toContain("historical site now lives under /old")
+    }
+  })
 
-it.effect("GET /examples returns 200 and contains Effect.fn", () =>
-  get("/examples").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("Effect.fn")
-          })
-        )
-      )
-    )
-  )
-)
+  it("unknown routes return 404", async () => {
+    const response = await get("/does-not-exist")
+    const body = await response.text()
 
-it.effect("GET /anti-patterns returns 200 and contains WRONG: and RIGHT:", () =>
-  get("/anti-patterns").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("WRONG:")
-            expect(body).toContain("RIGHT:")
-          })
-        )
-      )
-    )
-  )
-)
+    expect(response.status).toBe(404)
+    expect(body).toContain("active research homepage")
+  })
+})
 
-it.effect("GET /full returns 200 and contains # Effect-First TypeScript", () =>
-  get("/full").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("# Effect-First TypeScript")
-          })
-        )
-      )
-    )
-  )
-)
+describe("legacy archive routes", () => {
+  it("GET /old serves the preserved legacy homepage", async () => {
+    const response = await get("/old", { accept: "text/html" })
+    const body = await response.text()
 
-it.effect("GET /health returns JSON { ok: true }", () =>
-  get("/health").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.json()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toEqual({ ok: true })
-          })
-        )
-      )
-    )
-  )
-)
+    expect(response.status).toBe(200)
+    expect(response.headers.get("content-type")).toMatch(/text\/html/)
+    expect(body).toContain("effect-first.coey.dev")
+    expect(body).toContain('href="/old/rules"')
+  })
 
+  it("GET /old/rules serves preserved legacy content", async () => {
+    const response = await get("/old/rules")
+    const body = await response.text()
 
-it.effect("GET /http-server returns 200 and contains HttpApi", () =>
-  get("/http-server").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("HttpApi")
-          })
-        )
-      )
-    )
-  )
-)
+    expect(response.status).toBe(200)
+    expect(response.headers.get("content-type")).toMatch(/text\/plain/)
+    expect(body).toContain("RULE 1")
+    expect(response.headers.get("X-Token-Count")).not.toBeNull()
+  })
 
-it.effect("GET /http-client returns 200 and contains HttpClient", () =>
-  get("/http-client").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("HttpClient")
-          })
-        )
-      )
-    )
-  )
-)
+  it("GET /old/bundle preserves the old bundle behavior", async () => {
+    const response = await get("/old/bundle?modules=rules,reference")
+    const body = await response.text()
 
-it.effect("GET /sql returns 200 and contains SqlClient", () =>
-  get("/sql").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("SqlClient")
-          })
-        )
-      )
-    )
-  )
-)
+    expect(response.status).toBe(200)
+    expect(body).toContain("RULE 1")
+    expect(body).toContain("Effect Primitives")
+  })
 
-it.effect("GET /cli returns 200 and contains Command", () =>
-  get("/cli").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("Command")
-          })
-        )
-      )
-    )
-  )
-)
+  it("GET /old with a bad version preserves the old 400 behavior", async () => {
+    const response = await get("/old?version=4")
+    const body = await response.text()
 
-it.effect("GET /streams returns 200 and contains Stream", () =>
-  get("/streams").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("Stream")
-          })
-        )
-      )
-    )
-  )
-)
+    expect(response.status).toBe(400)
+    expect(body).toContain('Unsupported version "4"')
+  })
+})
 
-it.effect("GET /concurrency returns 200 and contains Effect.all", () =>
-  get("/concurrency").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("Effect.all")
-          })
-        )
-      )
-    )
-  )
-)
+describe("generated site content", () => {
+  it("keeps the homepage copy in sync with site/homepage.md", () => {
+    const expected = readFileSync(new URL("../site/homepage.md", import.meta.url), "utf8")
+    expect(CURRENT_HOMEPAGE).toBe(expected)
+  })
 
-it.effect("GET /resources returns 200 and contains acquireRelease", () =>
-  get("/resources").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toContain("acquireRelease")
-          })
-        )
-      )
+  it("keeps the experiment artifact in sync with experiment/results.json", () => {
+    const expected = JSON.parse(
+      readFileSync(new URL("../experiment/results.json", import.meta.url), "utf8")
     )
-  )
-)
+    expect(EXPERIMENT_RESULTS).toEqual(expected)
+  })
 
-it.effect("GET /rules includes X-Token-Count header", () =>
-  get("/rules").pipe(
-    Effect.flatMap((res) =>
-      Effect.sync(() => {
-        const header = res.headers.get("X-Token-Count")
-        expect(res.status).toBe(200)
-        expect(header).not.toBeNull()
-        expect(Number(header)).toBeGreaterThan(0)
-      })
-    )
-  )
-)
+  it("keeps the legacy archive pinned to commit 053b01d", () => {
+    expect(LEGACY_ARCHIVE.commit).toBe("053b01d")
+    expect(LEGACY_ARCHIVE.routeTextByPath["/"]).toContain("effect-first.coey.dev")
+    expect(LEGACY_ARCHIVE.routeTextByPath["/rules"]).toContain("RULE 1")
+    expect(LEGACY_ARCHIVE.routeTextByPath["/reference"]).toContain("Effect Primitives")
+  })
 
-it.effect("GET /bundle returns combined modules", () =>
-  get("/bundle?modules=rules,reference").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(res.headers.get("X-Token-Count")).not.toBeNull()
-            expect(body).toContain("RULE 1")
-            expect(body).toContain("Effect Primitives")
-          })
-        )
-      )
+  it("serves the completed restart experiment result", () => {
+    expect(EXPERIMENT_RESULTS.status).toBe("complete")
+    expect(EXPERIMENT_RESULTS.outcome).toBe("keep-investigating")
+    expect(EXPERIMENT_RESULTS.recommendedAction).toBe(
+      "keep-investigating-with-a-second-experiment"
     )
-  )
-)
-
-it.effect("GET /bundle with invalid modules returns 400", () =>
-  get("/bundle?modules=").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(400)
-            expect(body).toContain("Missing or invalid ?modules=")
-          })
-        )
-      )
-    )
-  )
-)
-
-it.effect("GET /rules with Accept: application/json returns JSON envelope", () =>
-  Effect.promise(() =>
-    handler(
-      new Request("http://localhost/rules", {
-        headers: { Accept: "application/json" },
-      })
-    )
-  ).pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.json()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(200)
-            expect(body).toMatchObject({
-              ok: true,
-              route: "/rules",
-            })
-            expect(typeof body.tokens).toBe("number")
-            expect(body.content).toContain("RULE 1")
-          })
-        )
-      )
-    )
-  )
-)
-
-it.effect("GET /rules?version=latest returns 200", () =>
-  get("/rules?version=latest").pipe(
-    Effect.flatMap((res) =>
-      Effect.sync(() => {
-        expect(res.status).toBe(200)
-      })
-    )
-  )
-)
-
-it.effect("GET /rules?version=3 returns 200", () =>
-  get("/rules?version=3").pipe(
-    Effect.flatMap((res) =>
-      Effect.sync(() => {
-        expect(res.status).toBe(200)
-      })
-    )
-  )
-)
-
-it.effect("GET /rules?version=unknown returns 400", () =>
-  get("/rules?version=2").pipe(
-    Effect.flatMap((res) =>
-      Effect.promise(() => res.text()).pipe(
-        Effect.flatMap((body) =>
-          Effect.sync(() => {
-            expect(res.status).toBe(400)
-            expect(body).toContain("Unsupported version")
-          })
-        )
-      )
-    )
-  )
-)
+    expect(EXPERIMENT_RESULTS.arms).toEqual(["baseline", "local-only"])
+    expect(EXPERIMENT_RESULTS.trials).toBe(3)
+    expect(EXPERIMENT_RESULTS.trialResults.map((trial) => trial.winner)).toEqual([
+      "local-only",
+      "local-only",
+      "local-only",
+    ])
+  })
+})

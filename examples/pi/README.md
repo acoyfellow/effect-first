@@ -1,42 +1,12 @@
-# Example: Pi + Effect-First
+# Pi example
 
-A config-driven health monitor built by Pi using the effect-first.coey.dev reference.
+The Pi example is the resilience-focused v4 project.
 
-## What this demonstrates
+It demonstrates:
 
-1. **AGENTS.md** (pi-mono convention) — tells Pi to fetch the Effect reference before writing code
-2. **The CLI** — a health-check monitor showing config + resilience patterns:
-   - `Effect.fn` for named functions
-   - `Schema.TaggedError` for typed errors (`EndpointUnreachableError`, `HealthDegradedError`)
-   - `Context.Tag` + `Layer` for services (`MonitorConfig`, `HealthChecker`)
-   - `Schema.Class` + branded types for data (`HealthResult`, `HealthReport`, `EndpointUrl`, `Milliseconds`, `Percentage`)
-   - `Schema.Config` for validated environment variables (Rule 6)
-   - `Effect.retry` + `Schedule.exponential` + `Schedule.recurs` for resilience (Rule 7)
-   - `Effect.timeout` for deadline enforcement (Rule 7)
-   - `@effect/vitest` for testing
+- validated configuration
+- a health-check service
+- retry and timeout operators
+- a reusable `ManagedRuntime`
 
-## Try it
-
-```bash
-npm install
-npm run build
-
-# Single check
-MONITOR_URL=http://example.com node dist/cli.js check --url http://example.com
-
-# Multiple checks with report
-MONITOR_URL=http://example.com node dist/cli.js check --url http://example.com --count 5
-
-# Tests
-npm test
-```
-
-## How it was made
-
-Pi was given AGENTS.md in this directory and asked to build a health monitor CLI.
-The reference at effect-first.coey.dev provided all the patterns.
-
-
-## How the agent discovers this file
-
-Pi reads `AGENTS.md` by convention for repo-scoped guidance. This README explains the resulting project and is linked from the root README.
+Use it directly when the task needs long-lived runtime edges or retry logic.

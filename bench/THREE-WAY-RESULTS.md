@@ -1,11 +1,9 @@
-# Three-Way Benchmark: baseline vs effect-first vs opensrc
+# v4 mechanism benchmark
 
-Model: gpt-5.2 | Temperature: 0.2
+The active benchmark is now:
 
-| Task | Baseline | effect-first | opensrc | effect.solutions | ef Δ | os Δ | es Δ |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 01-hello | 100% (8/8) | 100% (8/8) | 100% (8/8) | 100% (8/8) | +0% | +0% | +0% |
-| 02-errors | 100% (10/10) | 90% (9/10) | 100% (10/10) | 90% (9/10) | -10% | +0% | -10% |
-| 03-service | 100% (16/16) | 100% (16/16) | 75% (12/16) | 100% (16/16) | +0% | -25% | +0% |
-| 04-schema | 100% (12/12) | 100% (12/12) | 75% (9/12) | 100% (12/12) | +0% | -25% | +0% |
-| 05-full-stack | 76% (16/21) | 95% (20/21) | 76% (16/21) | 90% (19/21) | +19% | +0% | +14% |
+- baseline
+- website bootstrap plus kit
+- direct source on disk
+
+See `bench/results.json` for the current artifact.

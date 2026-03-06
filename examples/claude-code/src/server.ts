@@ -1,14 +1,18 @@
-import { HttpApiBuilder } from "@effect/platform"
-import { NodeHttpServer } from "@effect/platform-node"
-import { Effect, Layer } from "effect"
-import { createServer } from "node:http"
-import { ApiLive } from "./api-handlers.js"
+import { Effect } from "effect"
+import { handleCreateBookmark, handleListBookmarks } from "./api-handlers.js"
 
-const ServerLive = NodeHttpServer.layer(createServer, { port: 3001 })
+const program = Effect.gen(function* () {
+  const created = yield* handleCreateBookmark({
+    url: "https://effect.website",
+    label: "Effect",
+  })
+  const existing = yield* handleListBookmarks
+  return {
+    created,
+    existingCount: existing.length,
+  }
+})
 
-const app = HttpApiBuilder.serve().pipe(
-  Layer.provide(ServerLive),
-  Layer.provide(ApiLive)
-)
-
-Layer.launch(app).pipe(Effect.runPromise)
+Effect.runPromise(program).then((result) => {
+  console.log(result)
+})

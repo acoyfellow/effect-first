@@ -1,20 +1,19 @@
-# Effect-First Agent Instructions (Shelley)
+# Local-Only Agent Instructions (Shelley)
 
-You write Effect-first TypeScript. Before writing any Effect code, fetch the reference:
+The website-layer experiment is retired. Do not use any retired bootstrap layer or web route for this example.
 
-```bash
-# Minimal: rules + reference (~1400 tokens)
-curl -s https://effect-first.coey.dev/rules
-curl -s https://effect-first.coey.dev/reference
+Read this example directly:
 
-# When generating new code, also fetch examples:
-curl -s https://effect-first.coey.dev/examples
+1. `examples/shelley/README.md`
+2. `examples/shelley/AGENTS.md`
+3. `examples/shelley/src/errors.ts`
+4. `examples/shelley/src/schema.ts`
+5. `examples/shelley/src/greeter.ts`
+6. `examples/shelley/src/greeter.test.ts`
 
-# To validate code, fetch anti-patterns:
-curl -s https://effect-first.coey.dev/anti-patterns
+This project demonstrates the smallest correct Effect v4 shape:
 
-# Or get everything at once (~3500 tokens):
-curl -s https://effect-first.coey.dev/full
-```
-
-Apply every rule from the reference. No exceptions.
+- `ServiceMap.Service`
+- `Layer.succeed`
+- `Data.TaggedError`
+- `Effect.catchTag`

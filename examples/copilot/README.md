@@ -1,34 +1,11 @@
-# Example: Copilot + Effect-First
+# Copilot example
 
-A minimal Effect-first CLI built by GitHub Copilot using the effect-first.coey.dev reference.
+The Copilot example is the stream-focused v4 project.
 
-## What this demonstrates
+It demonstrates:
 
-1. **.github/copilot-instructions.md** — tells Copilot to fetch the Effect reference before writing code
-2. **The CLI** — a small but complete Effect program showing all core patterns:
-   - `Effect.fn` for named functions
-   - `Schema.TaggedError` for typed errors
-   - `Context.Tag` + `Layer` for services
-   - `Schema.Class` + branded types for data
-   - `Schema.Config` for configuration
-   - `@effect/vitest` for testing
+- a simple greeter service
+- event validation before aggregation
+- `Stream.runFold` for summary building
 
-## Try it
-
-```bash
-npm install
-npm run build
-node dist/cli.js greet --name Alice
-node dist/cli.js greet --name Alice --shout
-npm test
-```
-
-## How it was made
-
-Copilot was given the copilot instructions in this directory and asked to build a minimal CLI.
-The reference at effect-first.coey.dev provided all the patterns.
-
-
-## How the agent discovers this file
-
-Copilot uses `.github/copilot-instructions.md` as its discovery point. This README explains how the project maps to the instructions.
+Use it directly when the task needs stream processing.

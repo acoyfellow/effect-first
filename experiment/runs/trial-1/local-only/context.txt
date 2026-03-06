@@ -1,0 +1,21 @@
+Use the exact task prompt from `experiment/task/prompt.md`.
+
+Then read only these repo-local files, in this exact order:
+
+1. `examples/codex/README.md`
+2. `examples/codex/AGENTS.md`
+3. `examples/codex/src/errors.ts`
+4. `examples/codex/src/schema.ts`
+5. `examples/codex/src/todo-repo.ts`
+6. `examples/codex/src/todo-repo.test.ts`
+
+Do not use any website route, retired bootstrap content, or any other repo file as part of the intervention.
+
+Capture these artifacts for each local-only run:
+
+- `context.txt`
+- `prompt.txt`
+- `transcript.md`
+- `output/todo-repo.ts`
+- `metadata.json`
+- `verdict.json`

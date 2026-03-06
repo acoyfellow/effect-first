@@ -1,29 +1,26 @@
 {
   "name": "effect-first",
   "version": "1.0.0",
-  "description": "A resource for agents who want to write proper Effect programs",
+  "description": "A reset local-only experiment for testing repo-local guidance against a baseline prompt",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "generate:site": "node scripts/generate-site-content.mjs",
+    "build": "npm run generate:site && tsc",
     "start": "node dist/main.js",
-    "dev": "tsc && node dist/main.js",
-    "test": "vitest run",
+    "dev": "npm run build && node dist/main.js",
+    "test": "npm run generate:site && vitest run && npm run experiment:verify",
+    "experiment:verify": "tsx experiment/verify.ts",
+    "experiment:report": "tsx experiment/report.ts",
+    "examples:verify": "npm --prefix examples/shelley ci && npm --prefix examples/shelley test && npm --prefix examples/claude-code ci && npm --prefix examples/claude-code test && npm --prefix examples/cursor ci && npm --prefix examples/cursor test && npm --prefix examples/codex ci && npm --prefix examples/codex test && npm --prefix examples/copilot ci && npm --prefix examples/copilot test && npm --prefix examples/pi ci && npm --prefix examples/pi test",
     "prepare": "tsc --version"
   },
   "dependencies": {
-    "@effect/platform-node": "^0.104.1",
-    "dotenv": "^16.6.1"
-  },
-  "peerDependencies": {
-    "@effect/platform": "^0.94.5",
-    "effect": "^3.19.19"
+    "effect": "4.0.0-beta.25"
   },
   "devDependencies": {
-    "@effect/vitest": "^0.27.0",
     "@types/node": "^25.3.0",
     "tsx": "^4.20.5",
     "typescript": "^5.8.2",
-    "vitest": "^3.2.0",
-    "wrangler": "^4.67.0"
+    "vitest": "^3.2.0"
   }
 }

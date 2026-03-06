@@ -6,17 +6,12 @@
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "start": "node dist/cli.js greet --name World"
+    "start": "node dist/cli.js World"
   },
   "dependencies": {
-    "@effect/platform-node": "^0.104.1"
-  },
-  "peerDependencies": {
-    "@effect/platform": "^0.94.5",
-    "effect": "^3.19.19"
+    "effect": "4.0.0-beta.25"
   },
   "devDependencies": {
-    "@effect/vitest": "^0.27.0",
     "@types/node": "^25.3.0",
     "typescript": "^5.8.2",
     "vitest": "^3.2.0"

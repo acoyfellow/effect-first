@@ -1,37 +1,17 @@
 ---
-globs: "**/*.ts"
+description: effect-first local-only bootstrap
 alwaysApply: true
 ---
 
-# Effect-First Agent Instructions (Cursor)
+The website-layer experiment is retired. Do not use `kit/` or any web route for this project.
 
-You write Effect-first TypeScript. Before writing any Effect code, fetch the reference:
+From the repo root:
 
-```bash
-# Minimal: rules + reference (~1400 tokens)
-curl -s https://effect-first.coey.dev/rules
-curl -s https://effect-first.coey.dev/reference
+1. `examples/cursor/README.md`
+2. `examples/cursor/.cursor/rules/effect-first.mdc`
+3. `examples/cursor/src/errors.ts`
+4. `examples/cursor/src/schema.ts`
+5. `examples/cursor/src/registry.ts`
+6. `examples/cursor/src/validator.ts`
 
-# When generating new code, also fetch examples:
-curl -s https://effect-first.coey.dev/examples
-
-# To validate code, fetch anti-patterns:
-curl -s https://effect-first.coey.dev/anti-patterns
-
-# Or get everything at once (~3500 tokens):
-curl -s https://effect-first.coey.dev/full
-```
-
-Apply every rule from the reference. No exceptions.
-
-## Project-specific context
-
-This project is a Schema validation CLI. Key patterns:
-
-- **SchemaRegistry** service: Context.Tag + Layer resolving schema names to Effect Schema instances
-- **Validator** service: depends on SchemaRegistry via Layer.provide
-- **Branded types**: Email, Sku, ZipCode, Age, Price — use Schema.brand + Schema.pattern
-- **Schema.Class**: User, Product, Address, ValidationResult — structured data
-- **Schema.TaggedError**: SchemaNotFoundError, JsonParseError, ValidationFailedError
-- **Error formatting**: use ArrayFormatter.formatErrorSync from effect/ParseResult to turn parse errors into string messages
-- **Test layers**: every service has a static testLayer; tests use @effect/vitest it.effect + Effect.provide(Service.testLayer)
+Then use this example for schema-first validation flows.

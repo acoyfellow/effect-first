@@ -1,40 +1,25 @@
-import { HttpApiBuilder } from "@effect/platform"
-import { Effect, Layer } from "effect"
-import { BookmarksApi, type BookmarkId } from "./api.js"
-import { BookmarkRepo } from "./bookmark-repo.js"
+import { Effect } from "effect"
+import { BookmarkRepo, BookmarkRepoLive } from "./bookmark-repo.js"
+import {
+  decodeCreateBookmarkRequest,
+  InvalidBookmarkRequestError,
+} from "./api.js"
 
-export const BookmarksGroupLive = HttpApiBuilder.group(
-  BookmarksApi,
-  "bookmarks",
-  (handlers) =>
-    handlers
-      .handle("list", () =>
-        Effect.gen(function* () {
-          const repo = yield* BookmarkRepo
-          return yield* repo.list()
-        })
-      )
-      .handle("findById", ({ path }) =>
-        Effect.gen(function* () {
-          const repo = yield* BookmarkRepo
-          return yield* repo.findById(path.id as BookmarkId)
-        })
-      )
-      .handle("create", ({ payload }) =>
-        Effect.gen(function* () {
-          const repo = yield* BookmarkRepo
-          return yield* repo.create(payload.url, payload.title)
-        })
-      )
-      .handle("remove", ({ path }) =>
-        Effect.gen(function* () {
-          const repo = yield* BookmarkRepo
-          return yield* repo.remove(path.id as BookmarkId)
-        })
-      )
-)
+export const handleCreateBookmark = (input: unknown) =>
+  Effect.gen(function* () {
+    const request = yield* Effect.try({
+      try: () => decodeCreateBookmarkRequest(input),
+      catch: (error) =>
+        new InvalidBookmarkRequestError({
+          message:
+            error instanceof Error ? error.message : "bookmark request is invalid",
+        }),
+    })
+    const repo = yield* BookmarkRepo
+    return yield* repo.create(request)
+  }).pipe(Effect.provide(BookmarkRepoLive))
 
-export const ApiLive = HttpApiBuilder.api(BookmarksApi).pipe(
-  Layer.provide(BookmarksGroupLive),
-  Layer.provide(BookmarkRepo.layer)
-)
+export const handleListBookmarks = Effect.gen(function* () {
+  const repo = yield* BookmarkRepo
+  return yield* repo.list
+}).pipe(Effect.provide(BookmarkRepoLive))

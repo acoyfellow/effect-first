@@ -1,0 +1,1317 @@
+{
+  "version": 5,
+  "sourceDigest": "69b9c8e909410e79e355a0e1213d504e00db2076a59299eb4863b8090a2f1a83",
+  "claim": {
+    "status": "unproven",
+    "evidenceLevel": "live-falsified",
+    "publicClaim": "The decisive live protocol was not executable to completion under the required standard. effect-first did not establish efficacy for the evaluated protocol and the project should be archived.",
+    "provenToday": [
+      "The seeded benchmark harness is reproducible and auditable.",
+      "The decisive live protocol reached a terminal archive state.",
+      "The project should not continue as an efficacy claim."
+    ],
+    "notYetProven": [
+      "That effect-first improves the evaluated protocol.",
+      "That the website bootstrap adds enough lift to justify the project.",
+      "That the project should remain active as an efficacy claim."
+    ],
+    "promotionGates": [
+      {
+        "id": "fixed-model-config",
+        "label": "Fixed model configuration is committed in the batch manifest",
+        "satisfied": true,
+        "source": "bench/live/batches/001/manifest.json"
+      },
+      {
+        "id": "raw-transcripts",
+        "label": "All required raw transcripts are committed",
+        "satisfied": false,
+        "source": "bench/live/batches/001/runs"
+      },
+      {
+        "id": "holdout-tasks",
+        "label": "Six real repo-derived holdout tasks are committed",
+        "satisfied": true,
+        "source": "bench/live/batches/001/tasks"
+      },
+      {
+        "id": "all-arms-covered",
+        "label": "Every trial includes all three comparison arms",
+        "satisfied": false,
+        "source": "bench/live/batches/001/runs"
+      },
+      {
+        "id": "minimum-trials",
+        "label": "Every task records at least 3 trials",
+        "satisfied": false,
+        "source": "bench/live/batches/001/runs"
+      },
+      {
+        "id": "blinded-review",
+        "label": "A blinded review packet exists",
+        "satisfied": false,
+        "source": "bench/live/batches/001/review-packet"
+      },
+      {
+        "id": "two-reviewers",
+        "label": "Exactly 2 reviewer submissions are committed",
+        "satisfied": false,
+        "source": "bench/live/batches/001/reviews"
+      },
+      {
+        "id": "variance-reported",
+        "label": "Variance is reported in the scored decision artifact",
+        "satisfied": false,
+        "source": "bench/live/batches/001/decision.json"
+      }
+    ],
+    "stopRule": "Do not claim external proof of efficacy. If batch 001 fails, misses the hard deadline, or becomes infeasible, archive the project."
+  },
+  "liveEvaluation": {
+    "artifactFile": "bench/live/results.json",
+    "status": "decided",
+    "summary": "The decisive live protocol was not executable to completion under the required standard. By project policy, the repo should be archived.",
+    "currentBatch": "001",
+    "promotableBatch": null,
+    "terminalState": "archive-after-infeasible-batch",
+    "projectOutcome": "kill",
+    "recommendedAction": "archive",
+    "protocolAnchorCommit": "0792524a7ab22645c215cbc38f2fc87d486f4230",
+    "reviewerClass": "project-only",
+    "conclusionDeadline": "2026-03-10T23:59:59-05:00",
+    "references": {
+      "manifest": "bench/live/batches/001/manifest.json",
+      "protocol": "bench/live/batches/001/protocol.md",
+      "tasks": [
+        "bench/live/batches/001/tasks/task-01-service-boundary",
+        "bench/live/batches/001/tasks/task-02-error-recovery",
+        "bench/live/batches/001/tasks/task-03-runtime-reuse",
+        "bench/live/batches/001/tasks/task-04-multi-service-composition",
+        "bench/live/batches/001/tasks/task-05-unstable-adapter",
+        "bench/live/batches/001/tasks/task-06-end-to-end-monitor"
+      ],
+      "reviewPacket": [],
+      "reviews": [],
+      "decision": "bench/live/batches/001/decision.json"
+    },
+    "counts": {
+      "primaryTasks": 6,
+      "declaredTrialsPerTask": 3,
+      "observedRunCells": 0,
+      "expectedRunCells": 54,
+      "completedReviews": 0,
+      "reviewerSlots": 2
+    }
+  },
+  "reproducibility": {
+    "command": "npm run bench",
+    "verificationCommand": "npm run bench:verify",
+    "liveVerificationCommand": "npm run live:verify",
+    "artifactFiles": [
+      "bench/results.json",
+      "kit/evals/results.json",
+      "bench/live/results.json"
+    ],
+    "compiler": {
+      "typescript": "5.9.3",
+      "mode": "TypeScript strict noEmit",
+      "options": [
+        "strict",
+        "exactOptionalPropertyTypes",
+        "noImplicitOverride",
+        "noUnusedLocals",
+        "noUnusedParameters",
+        "skipLibCheck",
+        "noEmit"
+      ]
+    },
+    "scoring": "Deterministic AST-based structural judges plus per-file strict TypeScript noEmit compile checks."
+  },
+  "summary": {
+    "tasks": 6,
+    "dimensions": [
+      "apiCorrectness",
+      "idiomaticPatterns",
+      "antiPatterns",
+      "taskCompletion",
+      "compileReadiness"
+    ],
+    "arms": [
+      "baseline",
+      "website-bootstrap-plus-kit",
+      "direct-source-on-disk"
+    ],
+    "aggregate": {
+      "baseline": 73,
+      "website-bootstrap-plus-kit": 100,
+      "direct-source-on-disk": 90
+    },
+    "compilePassCounts": {
+      "baseline": 5,
+      "website-bootstrap-plus-kit": 6,
+      "direct-source-on-disk": 6
+    }
+  },
+  "tasks": [
+    {
+      "id": "01-service-definition",
+      "name": "Service definition and consumption",
+      "promptFile": "bench/01-service-definition/prompt.md",
+      "promptSha256": "e4d757e04c827db749c10a8c188f1afcbebf0c4502c8182fe3b22f987397d985",
+      "judgeFile": "bench/01-service-definition/judge.ts",
+      "judgeSha256": "08695b3c66273917a4e0db842c5c3af78968675d9f1152110a6964fbce2a75f0",
+      "scores": {
+        "baseline": 80,
+        "website-bootstrap-plus-kit": 100,
+        "direct-source-on-disk": 80
+      },
+      "compile": {
+        "baseline": true,
+        "website-bootstrap-plus-kit": true,
+        "direct-source-on-disk": true
+      },
+      "checks": {
+        "baseline": [
+          {
+            "label": "service",
+            "passed": true
+          },
+          {
+            "label": "layer",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": true
+          },
+          {
+            "label": "yield",
+            "passed": true
+          },
+          {
+            "label": "tagged error",
+            "passed": false
+          }
+        ],
+        "website-bootstrap-plus-kit": [
+          {
+            "label": "service",
+            "passed": true
+          },
+          {
+            "label": "layer",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": true
+          },
+          {
+            "label": "yield",
+            "passed": true
+          },
+          {
+            "label": "tagged error",
+            "passed": true
+          }
+        ],
+        "direct-source-on-disk": [
+          {
+            "label": "service",
+            "passed": true
+          },
+          {
+            "label": "layer",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": true
+          },
+          {
+            "label": "yield",
+            "passed": true
+          },
+          {
+            "label": "tagged error",
+            "passed": false
+          }
+        ]
+      },
+      "details": {
+        "baseline": {
+          "sourceFile": "bench/01-service-definition/baseline.ts",
+          "sourceSha256": "84a3513d3ffd5a40729ae66f52862a9beff92ea49db579f2a8db9fde94ae6c33",
+          "score": {
+            "total": 5,
+            "passed": 4,
+            "percentage": 80,
+            "checks": [
+              {
+                "label": "service",
+                "passed": true
+              },
+              {
+                "label": "layer",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": true
+              },
+              {
+                "label": "yield",
+                "passed": true
+              },
+              {
+                "label": "tagged error",
+                "passed": false
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "website-bootstrap-plus-kit": {
+          "sourceFile": "bench/01-service-definition/website-bootstrap-plus-kit.ts",
+          "sourceSha256": "5de71d91d19c82ad79b6c2d44516ddaf2286f102879091ad4ef75bcafe466040",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "service",
+                "passed": true
+              },
+              {
+                "label": "layer",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": true
+              },
+              {
+                "label": "yield",
+                "passed": true
+              },
+              {
+                "label": "tagged error",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "direct-source-on-disk": {
+          "sourceFile": "bench/01-service-definition/direct-source-on-disk.ts",
+          "sourceSha256": "84a3513d3ffd5a40729ae66f52862a9beff92ea49db579f2a8db9fde94ae6c33",
+          "score": {
+            "total": 5,
+            "passed": 4,
+            "percentage": 80,
+            "checks": [
+              {
+                "label": "service",
+                "passed": true
+              },
+              {
+                "label": "layer",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": true
+              },
+              {
+                "label": "yield",
+                "passed": true
+              },
+              {
+                "label": "tagged error",
+                "passed": false
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        }
+      }
+    },
+    {
+      "id": "02-tagged-errors",
+      "name": "Tagged errors and targeted recovery",
+      "promptFile": "bench/02-tagged-errors/prompt.md",
+      "promptSha256": "4b7b6d6723a0ae86da0b40d2190ef4f3f93a232453d75137914a8d9b0d2dd404",
+      "judgeFile": "bench/02-tagged-errors/judge.ts",
+      "judgeSha256": "bf2a381a278b9bab120073e13cfd9ffb3ac3de97163f73022612bd3e9781a86e",
+      "scores": {
+        "baseline": 80,
+        "website-bootstrap-plus-kit": 100,
+        "direct-source-on-disk": 100
+      },
+      "compile": {
+        "baseline": true,
+        "website-bootstrap-plus-kit": true,
+        "direct-source-on-disk": true
+      },
+      "checks": {
+        "baseline": [
+          {
+            "label": "tagged error",
+            "passed": true
+          },
+          {
+            "label": "catch tag",
+            "passed": true
+          },
+          {
+            "label": "tag constructor literal",
+            "passed": true
+          },
+          {
+            "label": "fail",
+            "passed": true
+          },
+          {
+            "label": "readonly payload",
+            "passed": false
+          }
+        ],
+        "website-bootstrap-plus-kit": [
+          {
+            "label": "tagged error",
+            "passed": true
+          },
+          {
+            "label": "catch tag",
+            "passed": true
+          },
+          {
+            "label": "tag constructor literal",
+            "passed": true
+          },
+          {
+            "label": "fail",
+            "passed": true
+          },
+          {
+            "label": "readonly payload",
+            "passed": true
+          }
+        ],
+        "direct-source-on-disk": [
+          {
+            "label": "tagged error",
+            "passed": true
+          },
+          {
+            "label": "catch tag",
+            "passed": true
+          },
+          {
+            "label": "tag constructor literal",
+            "passed": true
+          },
+          {
+            "label": "fail",
+            "passed": true
+          },
+          {
+            "label": "readonly payload",
+            "passed": true
+          }
+        ]
+      },
+      "details": {
+        "baseline": {
+          "sourceFile": "bench/02-tagged-errors/baseline.ts",
+          "sourceSha256": "a94a24bfe18ac49b361064723dc71924d0f8c525073cc58728d0360cdb560b80",
+          "score": {
+            "total": 5,
+            "passed": 4,
+            "percentage": 80,
+            "checks": [
+              {
+                "label": "tagged error",
+                "passed": true
+              },
+              {
+                "label": "catch tag",
+                "passed": true
+              },
+              {
+                "label": "tag constructor literal",
+                "passed": true
+              },
+              {
+                "label": "fail",
+                "passed": true
+              },
+              {
+                "label": "readonly payload",
+                "passed": false
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "website-bootstrap-plus-kit": {
+          "sourceFile": "bench/02-tagged-errors/website-bootstrap-plus-kit.ts",
+          "sourceSha256": "0c107913ab0001d36df020a41abc6fe985fc59deaad648514681c249cbf4f824",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "tagged error",
+                "passed": true
+              },
+              {
+                "label": "catch tag",
+                "passed": true
+              },
+              {
+                "label": "tag constructor literal",
+                "passed": true
+              },
+              {
+                "label": "fail",
+                "passed": true
+              },
+              {
+                "label": "readonly payload",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "direct-source-on-disk": {
+          "sourceFile": "bench/02-tagged-errors/direct-source-on-disk.ts",
+          "sourceSha256": "5745f1d30e37cf2b04abf972ab4159af622eb79219fed45020564ce7a3381e32",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "tagged error",
+                "passed": true
+              },
+              {
+                "label": "catch tag",
+                "passed": true
+              },
+              {
+                "label": "tag constructor literal",
+                "passed": true
+              },
+              {
+                "label": "fail",
+                "passed": true
+              },
+              {
+                "label": "readonly payload",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        }
+      }
+    },
+    {
+      "id": "03-runtime-edge",
+      "name": "Managed runtime and entrypoint edges",
+      "promptFile": "bench/03-runtime-edge/prompt.md",
+      "promptSha256": "e25394020e8e2dfbd3d9c7c1aaaf44b913eeaaafb6778171248780cdb076c6e6",
+      "judgeFile": "bench/03-runtime-edge/judge.ts",
+      "judgeSha256": "ad38b5a03cdc4c984e7fbc5371762060c3fda1283cdf2a0eed8fa872b5d787f9",
+      "scores": {
+        "baseline": 80,
+        "website-bootstrap-plus-kit": 100,
+        "direct-source-on-disk": 100
+      },
+      "compile": {
+        "baseline": true,
+        "website-bootstrap-plus-kit": true,
+        "direct-source-on-disk": true
+      },
+      "checks": {
+        "baseline": [
+          {
+            "label": "managed runtime",
+            "passed": true
+          },
+          {
+            "label": "run promise",
+            "passed": true
+          },
+          {
+            "label": "dispose",
+            "passed": true
+          },
+          {
+            "label": "generator",
+            "passed": true
+          },
+          {
+            "label": "yield service",
+            "passed": false
+          }
+        ],
+        "website-bootstrap-plus-kit": [
+          {
+            "label": "managed runtime",
+            "passed": true
+          },
+          {
+            "label": "run promise",
+            "passed": true
+          },
+          {
+            "label": "dispose",
+            "passed": true
+          },
+          {
+            "label": "generator",
+            "passed": true
+          },
+          {
+            "label": "yield service",
+            "passed": true
+          }
+        ],
+        "direct-source-on-disk": [
+          {
+            "label": "managed runtime",
+            "passed": true
+          },
+          {
+            "label": "run promise",
+            "passed": true
+          },
+          {
+            "label": "dispose",
+            "passed": true
+          },
+          {
+            "label": "generator",
+            "passed": true
+          },
+          {
+            "label": "yield service",
+            "passed": true
+          }
+        ]
+      },
+      "details": {
+        "baseline": {
+          "sourceFile": "bench/03-runtime-edge/baseline.ts",
+          "sourceSha256": "e786a9d327d43de84eed0bb56e0ea961c9b8524816ba2b15f0bc2f128d3360b6",
+          "score": {
+            "total": 5,
+            "passed": 4,
+            "percentage": 80,
+            "checks": [
+              {
+                "label": "managed runtime",
+                "passed": true
+              },
+              {
+                "label": "run promise",
+                "passed": true
+              },
+              {
+                "label": "dispose",
+                "passed": true
+              },
+              {
+                "label": "generator",
+                "passed": true
+              },
+              {
+                "label": "yield service",
+                "passed": false
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "website-bootstrap-plus-kit": {
+          "sourceFile": "bench/03-runtime-edge/website-bootstrap-plus-kit.ts",
+          "sourceSha256": "1eae95fad0d1c0d1b39471f326ad6ca62da24f17f003890527d363801d602570",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "managed runtime",
+                "passed": true
+              },
+              {
+                "label": "run promise",
+                "passed": true
+              },
+              {
+                "label": "dispose",
+                "passed": true
+              },
+              {
+                "label": "generator",
+                "passed": true
+              },
+              {
+                "label": "yield service",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "direct-source-on-disk": {
+          "sourceFile": "bench/03-runtime-edge/direct-source-on-disk.ts",
+          "sourceSha256": "1eae95fad0d1c0d1b39471f326ad6ca62da24f17f003890527d363801d602570",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "managed runtime",
+                "passed": true
+              },
+              {
+                "label": "run promise",
+                "passed": true
+              },
+              {
+                "label": "dispose",
+                "passed": true
+              },
+              {
+                "label": "generator",
+                "passed": true
+              },
+              {
+                "label": "yield service",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        }
+      }
+    },
+    {
+      "id": "04-multi-service",
+      "name": "Multi-service composition",
+      "promptFile": "bench/04-multi-service/prompt.md",
+      "promptSha256": "a1d9398956b9b4eab0878bbc22868a2d8d14dc4142ab96b2864cb682cfcea941",
+      "judgeFile": "bench/04-multi-service/judge.ts",
+      "judgeSha256": "77e7bff839c2549c8a4e119c575654560583299430036960c2e1197a7e51f508",
+      "scores": {
+        "baseline": 60,
+        "website-bootstrap-plus-kit": 100,
+        "direct-source-on-disk": 80
+      },
+      "compile": {
+        "baseline": true,
+        "website-bootstrap-plus-kit": true,
+        "direct-source-on-disk": true
+      },
+      "checks": {
+        "baseline": [
+          {
+            "label": "merge all",
+            "passed": true
+          },
+          {
+            "label": "greeter service",
+            "passed": true
+          },
+          {
+            "label": "repo service",
+            "passed": false
+          },
+          {
+            "label": "effect all",
+            "passed": false
+          },
+          {
+            "label": "provide",
+            "passed": true
+          }
+        ],
+        "website-bootstrap-plus-kit": [
+          {
+            "label": "merge all",
+            "passed": true
+          },
+          {
+            "label": "greeter service",
+            "passed": true
+          },
+          {
+            "label": "repo service",
+            "passed": true
+          },
+          {
+            "label": "effect all",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": true
+          }
+        ],
+        "direct-source-on-disk": [
+          {
+            "label": "merge all",
+            "passed": true
+          },
+          {
+            "label": "greeter service",
+            "passed": true
+          },
+          {
+            "label": "repo service",
+            "passed": true
+          },
+          {
+            "label": "effect all",
+            "passed": false
+          },
+          {
+            "label": "provide",
+            "passed": true
+          }
+        ]
+      },
+      "details": {
+        "baseline": {
+          "sourceFile": "bench/04-multi-service/baseline.ts",
+          "sourceSha256": "059ab2b39540fd059b888683df1abe32d975ade02f6b3c0babc10c9d7e0a7aab",
+          "score": {
+            "total": 5,
+            "passed": 3,
+            "percentage": 60,
+            "checks": [
+              {
+                "label": "merge all",
+                "passed": true
+              },
+              {
+                "label": "greeter service",
+                "passed": true
+              },
+              {
+                "label": "repo service",
+                "passed": false
+              },
+              {
+                "label": "effect all",
+                "passed": false
+              },
+              {
+                "label": "provide",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "website-bootstrap-plus-kit": {
+          "sourceFile": "bench/04-multi-service/website-bootstrap-plus-kit.ts",
+          "sourceSha256": "d16cb32325c0e6ed9b22e96fee6a121547a28a083fabbf9e4c4257d9bf61b0f8",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "merge all",
+                "passed": true
+              },
+              {
+                "label": "greeter service",
+                "passed": true
+              },
+              {
+                "label": "repo service",
+                "passed": true
+              },
+              {
+                "label": "effect all",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "direct-source-on-disk": {
+          "sourceFile": "bench/04-multi-service/direct-source-on-disk.ts",
+          "sourceSha256": "778e6f559af47c709c9d9d5da2ea90eeb63560ffcd95129decd674dd7abf1509",
+          "score": {
+            "total": 5,
+            "passed": 4,
+            "percentage": 80,
+            "checks": [
+              {
+                "label": "merge all",
+                "passed": true
+              },
+              {
+                "label": "greeter service",
+                "passed": true
+              },
+              {
+                "label": "repo service",
+                "passed": true
+              },
+              {
+                "label": "effect all",
+                "passed": false
+              },
+              {
+                "label": "provide",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        }
+      }
+    },
+    {
+      "id": "05-unstable-surface",
+      "name": "Unstable module boundary design",
+      "promptFile": "bench/05-unstable-surface/prompt.md",
+      "promptSha256": "318b191e004188cb10973f81c7be032e201226728614994726ff327a76eb2fb2",
+      "judgeFile": "bench/05-unstable-surface/judge.ts",
+      "judgeSha256": "227d70d5ae3722a3091a5583fcdd8a7721e222cd68f024ee22a26179d507bcbf",
+      "scores": {
+        "baseline": 40,
+        "website-bootstrap-plus-kit": 100,
+        "direct-source-on-disk": 80
+      },
+      "compile": {
+        "baseline": false,
+        "website-bootstrap-plus-kit": true,
+        "direct-source-on-disk": true
+      },
+      "checks": {
+        "baseline": [
+          {
+            "label": "unstable import",
+            "passed": true
+          },
+          {
+            "label": "local service",
+            "passed": false
+          },
+          {
+            "label": "layer",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": false
+          },
+          {
+            "label": "adapter name",
+            "passed": false
+          }
+        ],
+        "website-bootstrap-plus-kit": [
+          {
+            "label": "unstable import",
+            "passed": true
+          },
+          {
+            "label": "local service",
+            "passed": true
+          },
+          {
+            "label": "layer",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": true
+          },
+          {
+            "label": "adapter name",
+            "passed": true
+          }
+        ],
+        "direct-source-on-disk": [
+          {
+            "label": "unstable import",
+            "passed": true
+          },
+          {
+            "label": "local service",
+            "passed": true
+          },
+          {
+            "label": "layer",
+            "passed": true
+          },
+          {
+            "label": "provide",
+            "passed": false
+          },
+          {
+            "label": "adapter name",
+            "passed": true
+          }
+        ]
+      },
+      "details": {
+        "baseline": {
+          "sourceFile": "bench/05-unstable-surface/baseline.ts",
+          "sourceSha256": "05a6395fa56ebc556a7cb540849ae1f0ebe70f4787fe1cef5f3bc77d6343bc58",
+          "score": {
+            "total": 5,
+            "passed": 2,
+            "percentage": 40,
+            "checks": [
+              {
+                "label": "unstable import",
+                "passed": true
+              },
+              {
+                "label": "local service",
+                "passed": false
+              },
+              {
+                "label": "layer",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": false
+              },
+              {
+                "label": "adapter name",
+                "passed": false
+              }
+            ]
+          },
+          "compile": {
+            "passed": false,
+            "diagnostics": [
+              "Argument of type 'string' is not assignable to parameter of type 'Key<unknown, unknown>'."
+            ]
+          }
+        },
+        "website-bootstrap-plus-kit": {
+          "sourceFile": "bench/05-unstable-surface/website-bootstrap-plus-kit.ts",
+          "sourceSha256": "208cddf575ada62a3ac198fa0e63af947690571f008c6f724b2907b44ce75657",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "unstable import",
+                "passed": true
+              },
+              {
+                "label": "local service",
+                "passed": true
+              },
+              {
+                "label": "layer",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": true
+              },
+              {
+                "label": "adapter name",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "direct-source-on-disk": {
+          "sourceFile": "bench/05-unstable-surface/direct-source-on-disk.ts",
+          "sourceSha256": "3ec52a771e9f8434dbb3f65ff296016f1a03e98e4a1f1bf8475e0af97103cb46",
+          "score": {
+            "total": 5,
+            "passed": 4,
+            "percentage": 80,
+            "checks": [
+              {
+                "label": "unstable import",
+                "passed": true
+              },
+              {
+                "label": "local service",
+                "passed": true
+              },
+              {
+                "label": "layer",
+                "passed": true
+              },
+              {
+                "label": "provide",
+                "passed": false
+              },
+              {
+                "label": "adapter name",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        }
+      }
+    },
+    {
+      "id": "06-real-program",
+      "name": "End-to-end real program",
+      "promptFile": "bench/06-real-program/prompt.md",
+      "promptSha256": "ff35381e44191b3b04f818319def7df589963991636063daa06b43c01ebf8414",
+      "judgeFile": "bench/06-real-program/judge.ts",
+      "judgeSha256": "450d38a2d981242e9b802fd18790898acb0f1c25465d6e0021b0582b0dbf7b85",
+      "scores": {
+        "baseline": 100,
+        "website-bootstrap-plus-kit": 100,
+        "direct-source-on-disk": 100
+      },
+      "compile": {
+        "baseline": true,
+        "website-bootstrap-plus-kit": true,
+        "direct-source-on-disk": true
+      },
+      "checks": {
+        "baseline": [
+          {
+            "label": "runtime",
+            "passed": true
+          },
+          {
+            "label": "schedule",
+            "passed": true
+          },
+          {
+            "label": "retry",
+            "passed": true
+          },
+          {
+            "label": "timeout",
+            "passed": true
+          },
+          {
+            "label": "stream fold",
+            "passed": true
+          }
+        ],
+        "website-bootstrap-plus-kit": [
+          {
+            "label": "runtime",
+            "passed": true
+          },
+          {
+            "label": "schedule",
+            "passed": true
+          },
+          {
+            "label": "retry",
+            "passed": true
+          },
+          {
+            "label": "timeout",
+            "passed": true
+          },
+          {
+            "label": "stream fold",
+            "passed": true
+          }
+        ],
+        "direct-source-on-disk": [
+          {
+            "label": "runtime",
+            "passed": true
+          },
+          {
+            "label": "schedule",
+            "passed": true
+          },
+          {
+            "label": "retry",
+            "passed": true
+          },
+          {
+            "label": "timeout",
+            "passed": true
+          },
+          {
+            "label": "stream fold",
+            "passed": true
+          }
+        ]
+      },
+      "details": {
+        "baseline": {
+          "sourceFile": "bench/06-real-program/baseline.ts",
+          "sourceSha256": "ddc998447b24ff6538e8b9718599951975595cd8cb3a42329583199b0be0537c",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "runtime",
+                "passed": true
+              },
+              {
+                "label": "schedule",
+                "passed": true
+              },
+              {
+                "label": "retry",
+                "passed": true
+              },
+              {
+                "label": "timeout",
+                "passed": true
+              },
+              {
+                "label": "stream fold",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "website-bootstrap-plus-kit": {
+          "sourceFile": "bench/06-real-program/website-bootstrap-plus-kit.ts",
+          "sourceSha256": "93e8126b6f0170162d0e4fe9310011e7bbf85517543b6185758eddb255d2a59b",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "runtime",
+                "passed": true
+              },
+              {
+                "label": "schedule",
+                "passed": true
+              },
+              {
+                "label": "retry",
+                "passed": true
+              },
+              {
+                "label": "timeout",
+                "passed": true
+              },
+              {
+                "label": "stream fold",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        },
+        "direct-source-on-disk": {
+          "sourceFile": "bench/06-real-program/direct-source-on-disk.ts",
+          "sourceSha256": "93e8126b6f0170162d0e4fe9310011e7bbf85517543b6185758eddb255d2a59b",
+          "score": {
+            "total": 5,
+            "passed": 5,
+            "percentage": 100,
+            "checks": [
+              {
+                "label": "runtime",
+                "passed": true
+              },
+              {
+                "label": "schedule",
+                "passed": true
+              },
+              {
+                "label": "retry",
+                "passed": true
+              },
+              {
+                "label": "timeout",
+                "passed": true
+              },
+              {
+                "label": "stream fold",
+                "passed": true
+              }
+            ]
+          },
+          "compile": {
+            "passed": true,
+            "diagnostics": []
+          }
+        }
+      }
+    }
+  ]
+}

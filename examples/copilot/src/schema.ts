@@ -1,13 +1,7 @@
 import { Schema } from "effect"
 
-export const Name = Schema.String.pipe(
-  Schema.minLength(2),
-  Schema.brand("Name")
-)
-export type Name = typeof Name.Type
+export const NameInput = Schema.Struct({
+  name: Schema.String,
+})
 
-export class Greeting extends Schema.Class<Greeting>("Greeting")({
-  message: Schema.String,
-  recipient: Name,
-  shout: Schema.Boolean,
-}) {}
+export const decodeNameInput = Schema.decodeUnknownSync(NameInput)

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "status": "complete",
+  "hypothesis": "Repo-local code and repo-local instructions are enough to create a measurable improvement over a baseline prompt on one fixed Effect v4 coding task.",
+  "taskId": "todo-repo-local-only-001",
+  "arms": [
+    "baseline",
+    "local-only"
+  ],
+  "trials": 3,
+  "primaryMetric": "acceptance-test-pass-rate",
+  "strictWinRule": "keep-investigating only if local-only passes all 3 trials, baseline fails all 3 trials, and every run artifact is committed and verifiable. Any other result is kill.",
+  "frozenInputs": {
+    "deadline": "2026-03-04T23:59:59-05:00",
+    "files": {
+      "experiment/contexts/baseline.txt": "c9ffb66b0805697be99f42b79573ed985bc7266cd3da1722ecbd8bb2f082d769",
+      "experiment/contexts/local-only.txt": "3d6be35b268324e06f06d9d39c48d97e23233d361ab68843ef5299ce511a76f2",
+      "experiment/task/prompt.md": "9b98868ec72f3b60e7a74471916033962128bc1f434a1790cd2025e671f0e9cc",
+      "experiment/task/fixture/src/errors.ts": "3431c1df764df0fcf46ae3438785faa5b63ec48ce53d149e64d32e771db2779a",
+      "experiment/task/fixture/src/schema.ts": "ee7afcf8d177fb246affa6371dddee11f6d9ab27ef7f54f785e5ff187be339a8",
+      "experiment/task/fixture/src/todo-repo.ts": "fa9036ac8852a72bb59a4849bb88df73fd7ee2f4fdd4cfd9a75db356c8faabf5",
+      "experiment/task/fixture/src/todo-repo.test.ts": "e316b5135f043f2ba2c6e6d401ebf5d27b8a18b1f369b546bd7414f6a3d37b7d"
+    }
+  },
+  "outcome": "keep-investigating",
+  "summary": "Three internal constrained-context trials were captured on March 3, 2026. The local-only arm compiled and passed the fixture test suite in all 3 trials, while the baseline arm compiled but failed the same completion assertion in all 3 trials. This is a narrow keep-investigating signal only, not a proof claim.",
+  "trialResults": [
+    {
+      "trialId": "trial-1",
+      "baseline": {
+        "artifactDir": "experiment/runs/trial-1/baseline",
+        "compiled": true,
+        "testsPassed": false,
+        "testCommand": "../node_modules/.bin/vitest run src/todo-repo.test.ts",
+        "exitCode": 1,
+        "durationMs": 1199
+      },
+      "localOnly": {
+        "artifactDir": "experiment/runs/trial-1/local-only",
+        "compiled": true,
+        "testsPassed": true,
+        "testCommand": "../node_modules/.bin/vitest run src/todo-repo.test.ts",
+        "exitCode": 0,
+        "durationMs": 969
+      },
+      "winner": "local-only"
+    },
+    {
+      "trialId": "trial-2",
+      "baseline": {
+        "artifactDir": "experiment/runs/trial-2/baseline",
+        "compiled": true,
+        "testsPassed": false,
+        "testCommand": "../node_modules/.bin/vitest run src/todo-repo.test.ts",
+        "exitCode": 1,
+        "durationMs": 983
+      },
+      "localOnly": {
+        "artifactDir": "experiment/runs/trial-2/local-only",
+        "compiled": true,
+        "testsPassed": true,
+        "testCommand": "../node_modules/.bin/vitest run src/todo-repo.test.ts",
+        "exitCode": 0,
+        "durationMs": 989
+      },
+      "winner": "local-only"
+    },
+    {
+      "trialId": "trial-3",
+      "baseline": {
+        "artifactDir": "experiment/runs/trial-3/baseline",
+        "compiled": true,
+        "testsPassed": false,
+        "testCommand": "../node_modules/.bin/vitest run src/todo-repo.test.ts",
+        "exitCode": 1,
+        "durationMs": 1014
+      },
+      "localOnly": {
+        "artifactDir": "experiment/runs/trial-3/local-only",
+        "compiled": true,
+        "testsPassed": true,
+        "testCommand": "../node_modules/.bin/vitest run src/todo-repo.test.ts",
+        "exitCode": 0,
+        "durationMs": 1004
+      },
+      "winner": "local-only"
+    }
+  ],
+  "recommendedAction": "keep-investigating-with-a-second-experiment"
+}
