@@ -20,6 +20,15 @@ describe("current site routes", () => {
     expect(body).toContain("experiment/results.json")
   })
 
+  it("GET / embeds the MichaelArnaldi tweet for context", async () => {
+    const response = await get("/")
+    const body = await response.text()
+
+    expect(body).toContain("twitter-tweet")
+    expect(body).toContain("MichaelArnaldi/status/2027896616976281792")
+    expect(body).toContain("platform.twitter.com/widgets.js")
+  })
+
   it("GET /health returns JSON { ok: true }", async () => {
     const response = await get("/health")
     const body = await response.json()
